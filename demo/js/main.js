@@ -463,7 +463,13 @@ let cart     = JSON.parse(localStorage.getItem('yb-cart') || '[]');
 let wishlist = JSON.parse(localStorage.getItem('kh-wl')   || '[]');
 
 function saveCart() { localStorage.setItem('yb-cart', JSON.stringify(cart)); refreshCartUI(); }
-function saveWL()   { localStorage.setItem('kh-wl',   JSON.stringify(wishlist)); }
+function saveWL()   { localStorage.setItem('kh-wl',   JSON.stringify(wishlist)); refreshWishlistUI(); }
+function refreshWishlistUI() {
+  const c = wishlist.length;
+  document.querySelectorAll('.js-wl-count').forEach(el => {
+    el.textContent = c; el.style.display = c > 0 ? 'flex' : 'none';
+  });
+}
 
 function addToCart(id, size, color, qty=1) {
   const p = ALL_PRODUCTS.find(x => x.id === id);
@@ -991,6 +997,7 @@ window.toggleFilterBlock = function(el) {
 /* ── INIT ── */
 document.addEventListener('DOMContentLoaded', () => {
   refreshCartUI();
+  refreshWishlistUI();
   initSlider();
   initNav();
   initCartDrawer();
