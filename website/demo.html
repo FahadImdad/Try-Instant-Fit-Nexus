@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book a Demo | See Virtual Try-On in Action</title>
+    <meta name="description" content="Book a free personalized demo and see how virtual try-on can transform your fashion retail business.">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                Try Instant<span>Fit</span>
+            </div>
+            <div class="menu-toggle" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="products.html" class="nav-link">Products</a></li>
+                <li><a href="how-it-works.html" class="nav-link">How It Works</a></li>
+                <li><a href="pricing.html" class="nav-link">Pricing</a></li>
+                <li><a href="register.html" class="nav-link nav-register">Register</a></li><li><a href="demo.html" class="btn btn-primary">Book Demo</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container">
+            <h1>See Virtual Try-On in Action</h1>
+            <p>Book a free personalized demo and discover how our technology can transform your business.</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="section">
+        <div class="container">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start;">
+                <!-- Left: Benefits -->
+                <div>
+                    <h2>What You'll Get in Your Demo</h2>
+                    <p style="margin-bottom: 2rem;">A personalized 30-minute session showing exactly how virtual try-on works for your business.</p>
+
+                    <div style="margin-bottom: 2rem;">
+                        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                            <div style="flex-shrink: 0; width: 40px; height: 40px; background: var(--secondary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">1</div>
+                            <div>
+                                <h4>Live Virtual Try-On Demo</h4>
+                                <p style="color: var(--text-light);">See real-time try-on with your actual products (we'll set them up before the call)</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                            <div style="flex-shrink: 0; width: 40px; height: 40px; background: var(--secondary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">2</div>
+                            <div>
+                                <h4>ROI Calculation</h4>
+                                <p style="color: var(--text-light);">We'll calculate your exact ROI based on your current sales and return rates</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                            <div style="flex-shrink: 0; width: 40px; height: 40px; background: var(--secondary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">3</div>
+                            <div>
+                                <h4>Technical Walkthrough</h4>
+                                <p style="color: var(--text-light);">See how easy integration is - no developers needed for Ghost Layer</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                            <div style="flex-shrink: 0; width: 40px; height: 40px; background: var(--secondary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">4</div>
+                            <div>
+                                <h4>Custom Pricing Quote</h4>
+                                <p style="color: var(--text-light);">Get a tailored pricing proposal based on your expected volume</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <div style="flex-shrink: 0; width: 40px; height: 40px; background: var(--secondary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">5</div>
+                            <div>
+                                <h4>Q&A Session</h4>
+                                <p style="color: var(--text-light);">Ask anything about technology, pricing, integration, or use cases</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="background: var(--background-light); margin-top: 2rem;">
+                        <h4>🎁 Limited Time Offer</h4>
+                        <p>Book a demo this month and get:</p>
+                        <ul style="margin-left: 1.5rem; line-height: 1.8; color: var(--text-light);">
+                            <li><strong>Free</strong> initial product upload (50 items)</li>
+                            <li><strong>15% discount</strong> on setup fee</li>
+                            <li><strong>1,000 free</strong> try-ons in first month</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Right: Contact Form -->
+                <div>
+                    <div class="card" style="box-shadow: var(--shadow-xl);">
+                        <h3>Book Your Free Demo</h3>
+                        <p style="color: var(--text-light); margin-bottom: 2rem;">Fill out the form below and we'll contact you within 24 hours to schedule your personalized demo.</p>
+
+                        <form id="demoForm" onsubmit="return handleSubmit(event);">
+                            <div class="form-group">
+                                <label for="name">Full Name *</label>
+                                <input type="text" id="name" name="name" class="form-control" required placeholder="Fahad Imdad">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">Email Address *</label>
+                                <input type="email" id="email" name="email" class="form-control" required placeholder="fahad@yourbrand.com">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" name="phone" class="form-control" placeholder="+92 300 1234567">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="company">Company/Brand Name *</label>
+                                <input type="text" id="company" name="company" class="form-control" required placeholder="Your Fashion Brand">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="website">Website URL</label>
+                                <input type="url" id="website" name="website" class="form-control" placeholder="https://yourbrand.com">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="product">Which Product Interests You? *</label>
+                                <select id="product" name="product" class="form-control" required>
+                                    <option value="">Select a product...</option>
+                                    <option value="ghost-layer">Ghost Layer (Website Widget)</option>
+                                    <option value="scan-wear">Scan & Wear (QR Codes)</option>
+                                    <option value="digital-mirror">Digital Mirror (Hardware)</option>
+                                    <option value="multiple">Multiple Products</option>
+                                    <option value="not-sure">Not Sure Yet</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="volume">Expected Monthly Try-Ons</label>
+                                <select id="volume" name="volume" class="form-control">
+                                    <option value="">Select volume...</option>
+                                    <option value="0-1000">0-1,000 try-ons/month</option>
+                                    <option value="1000-5000">1,000-5,000 try-ons/month</option>
+                                    <option value="5000-10000">5,000-10,000 try-ons/month</option>
+                                    <option value="10000+">10,000+ try-ons/month</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="message">Tell Us About Your Business</label>
+                                <textarea id="message" name="message" class="form-control" placeholder="What type of fashion products do you sell? What are your main challenges with returns or conversions?"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                    <input type="checkbox" required>
+                                    <span style="font-weight: 400;">I agree to receive marketing communications *</span>
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.125rem; padding: 1rem;">
+                                Book My Free Demo →
+                            </button>
+
+                            <p style="text-align: center; margin-top: 1rem; font-size: 0.875rem; color: var(--text-light);">
+                                We'll respond within 24 hours
+                            </p>
+                        </form>
+                    </div>
+
+                    <!-- Trust Indicators -->
+                    <div style="margin-top: 2rem; text-align: center;">
+                        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                            <span class="badge badge-success">✓ No Credit Card Required</span>
+                            <span class="badge badge-info">✓ 30-Min Demo</span>
+                            <span class="badge badge-warning">✓ Free Setup Consult</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Alternative Contact -->
+    <section class="section section-alt">
+        <div class="container">
+            <div class="text-center mb-lg">
+                <h2>Other Ways to Reach Us</h2>
+            </div>
+            <div class="card-grid" style="max-width: 900px; margin: 0 auto;">
+                <div class="card text-center">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📧</div>
+                    <h4>Email Us</h4>
+                    <p><a href="mailto:hello@tryinstantfit.com">hello@tryinstantfit.com</a></p>
+                    <p style="font-size: 0.9rem; color: var(--text-light);">We respond within 24 hours</p>
+                </div>
+                <div class="card text-center">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">💬</div>
+                    <h4>WhatsApp</h4>
+                    <p><a href="https://wa.me/923001234567">+92 300 1234567</a></p>
+                    <p style="font-size: 0.9rem; color: var(--text-light);">Quick questions welcome</p>
+                </div>
+                <div class="card text-center">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🌍</div>
+                    <h4>Location</h4>
+                    <p>Pakistan → Global</p>
+                    <p style="font-size: 0.9rem; color: var(--text-light);">Serving retailers worldwide</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section">
+        <div class="container">
+            <div class="text-center mb-lg">
+                <h2>Demo FAQ</h2>
+            </div>
+            <div style="max-width: 800px; margin: 0 auto; display: grid; gap: 1rem;">
+                <div class="card">
+                    <h4>How long is the demo?</h4>
+                    <p style="margin: 0;">30 minutes. We keep it concise and focused on your specific needs.</p>
+                </div>
+                <div class="card">
+                    <h4>Do I need to prepare anything?</h4>
+                    <p style="margin: 0;">Just have 2-3 product images ready to share. We'll upload them live during the demo to show real results.</p>
+                </div>
+                <div class="card">
+                    <h4>Is this really free?</h4>
+                    <p style="margin: 0;">Absolutely! No credit card required. No obligation. Just a helpful demo to see if we're a good fit.</p>
+                </div>
+                <div class="card">
+                    <h4>Can I see it with my actual products?</h4>
+                    <p style="margin: 0;">Yes! Send us a few product images beforehand and we'll have them ready to demo during the call.</p>
+                </div>
+                <div class="card">
+                    <h4>What if I'm not ready to buy?</h4>
+                    <p style="margin: 0;">No problem! We're happy to educate and answer questions even if you're just exploring options.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section" style="background: linear-gradient(135deg, #1a2b4a 0%, #2d3e5f 100%); color: white;">
+        <div class="container text-center">
+            <h2 style="color: white;">Ready to Transform Your Fashion Business?</h2>
+            <p style="color: rgba(255, 255, 255, 0.9); font-size: 1.25rem;">Join forward-thinking retailers who are reducing returns and increasing sales with virtual try-on.</p>
+            <a href="#demoForm" class="btn btn-primary btn-large" style="margin-top: 2rem;">Book Demo Now ↑</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4>Try Instant<span style="color: var(--secondary-color);">Fit</span></h4>
+                    <p style="color: rgba(255, 255, 255, 0.8);">AI-powered virtual try-on technology for modern fashion retailers.</p>
+                </div>
+                <div>
+                    <h4>Products</h4>
+                    <ul class="footer-links">
+                        <li><a href="products.html#ghost-layer">Ghost Layer Widget</a></li>
+                        <li><a href="products.html#scan-wear">Scan & Wear QR</a></li>
+                        <li><a href="products.html#digital-mirror">Digital Mirror</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Company</h4>
+                    <ul class="footer-links">
+                        <li><a href="how-it-works.html">How It Works</a></li>
+                        <li><a href="pricing.html">Pricing</a></li>
+                        <li><a href="demo.html">Book Demo</a></li>
+                        <li><a href="#about">About Us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Contact</h4>
+                    <ul class="footer-links">
+                        <li><a href="mailto:hello@tryinstantfit.com">hello@tryinstantfit.com</a></li>
+                        <li><a href="#location">Pakistan → Global</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Try Instant Fit. All rights reserved. Powered by Google Cloud & IDM-VTON Technology.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script>
+        function handleSubmit(event) {
+            event.preventDefault();
+
+            // Get form data
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData);
+
+            // In a real implementation, you would send this to your backend
+            console.log('Form submitted:', data);
+
+            // Show success message
+            alert('Thank you! We\'ve received your demo request and will contact you within 24 hours via email.');
+
+            // Reset form
+            event.target.reset();
+
+            return false;
+        }
+    </script>
+</body>
+</html>

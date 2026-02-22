@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Your Business | Try Instant Fit</title>
+    <meta name="description" content="Register your fashion business and get started with AI-powered virtual try-on technology from Try Instant Fit.">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* ── Multi-step form ── */
+        .reg-wrap {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+        }
+        .progress-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 60%;
+            width: 80%;
+            height: 2px;
+            background: var(--border-color);
+            z-index: 0;
+        }
+        .progress-step.done:not(:last-child)::after,
+        .progress-step.active:not(:last-child)::after {
+            background: var(--secondary-color);
+        }
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--border-color);
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 1;
+            transition: background 0.3s, color 0.3s;
+        }
+        .progress-step.active .step-circle {
+            background: var(--secondary-color);
+            color: white;
+        }
+        .progress-step.done .step-circle {
+            background: var(--secondary-color);
+            color: white;
+        }
+        .step-label {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-top: 0.5rem;
+            text-align: center;
+            font-weight: 500;
+        }
+        .progress-step.active .step-label { color: var(--primary-color); font-weight: 700; }
+        .progress-step.done .step-label { color: var(--secondary-color); }
+
+        /* Step panels */
+        .step-panel { display: none; }
+        .step-panel.active { display: block; }
+
+        /* Product selector cards */
+        .product-select-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .product-select-card {
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+            position: relative;
+        }
+        .product-select-card:hover {
+            border-color: var(--secondary-color);
+            box-shadow: var(--shadow-md);
+        }
+        .product-select-card.selected {
+            border-color: var(--secondary-color);
+            background: rgba(45, 212, 191, 0.06);
+        }
+        .product-select-card .check {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--secondary-color);
+            color: white;
+            font-size: 12px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+        .product-select-card.selected .check { display: flex; }
+        .product-select-card .icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+        .product-select-card h4 { font-size: 1rem; margin-bottom: 0.25rem; }
+        .product-select-card p { font-size: 0.8rem; color: var(--text-light); margin: 0; }
+        .product-select-card .price-hint {
+            margin-top: 0.75rem;
+            font-size: 0.75rem;
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        /* Plan selector */
+        .plan-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .plan-card {
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+        .plan-card:hover { border-color: var(--secondary-color); box-shadow: var(--shadow-md); }
+        .plan-card.selected { border-color: var(--secondary-color); background: rgba(45,212,191,0.06); }
+        .plan-card .check { position: absolute; top: 10px; right: 12px; width: 22px; height: 22px; border-radius: 50%; background: var(--secondary-color); color: white; font-size: 12px; display: none; align-items: center; justify-content: center; font-weight: 700; }
+        .plan-card.selected .check { display: flex; }
+        .plan-card .plan-badge { display: inline-block; background: var(--accent-color); color: white; font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .plan-card .plan-price { font-size: 1.75rem; font-weight: 800; color: var(--primary-color); }
+        .plan-card .plan-price span { font-size: 0.85rem; font-weight: 400; color: var(--text-light); }
+        .plan-card .plan-per { font-size: 0.75rem; color: var(--text-light); margin-bottom: 1rem; }
+        .plan-features { list-style: none; text-align: left; font-size: 0.8rem; }
+        .plan-features li { padding: 0.3rem 0; color: var(--text-light); }
+        .plan-features li::before { content: '✓ '; color: var(--secondary-color); font-weight: 700; }
+
+        /* Summary box */
+        .reg-summary {
+            background: var(--background-light);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+        .summary-row:last-child { border-bottom: none; font-weight: 700; font-size: 1rem; }
+        .summary-row span:last-child { color: var(--primary-color); font-weight: 600; }
+
+        /* Nav buttons */
+        .step-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+        .step-nav .btn-back {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        .step-nav .btn-back:hover { border-color: var(--primary-color); color: var(--primary-color); }
+
+        /* Success screen */
+        .success-screen {
+            text-align: center;
+            padding: 3rem 2rem;
+            display: none;
+        }
+        .success-screen .checkmark {
+            width: 80px;
+            height: 80px;
+            background: var(--secondary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        @media (max-width: 600px) {
+            .product-select-grid, .plan-grid { grid-template-columns: 1fr; }
+            .step-label { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                Try Instant<span>Fit</span>
+            </div>
+            <div class="menu-toggle" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="products.html" class="nav-link">Products</a></li>
+                <li><a href="how-it-works.html" class="nav-link">How It Works</a></li>
+                <li><a href="pricing.html" class="nav-link">Pricing</a></li>
+                <li><a href="register.html" class="nav-link nav-register active">Register</a></li>
+                <li><a href="demo.html" class="btn btn-primary">Book Demo</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero" style="padding: 4rem 0;">
+        <div class="container">
+            <h1 style="font-size: 2.5rem;">Get Started with Try Instant Fit</h1>
+            <p>Register your business and launch virtual try-on for your customers in days, not months.</p>
+        </div>
+    </section>
+
+    <!-- Registration Form -->
+    <section class="section">
+        <div class="container">
+            <div class="reg-wrap">
+
+                <!-- Progress -->
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress-step active" data-step="1">
+                        <div class="step-circle">1</div>
+                        <div class="step-label">Business Info</div>
+                    </div>
+                    <div class="progress-step" data-step="2">
+                        <div class="step-circle">2</div>
+                        <div class="step-label">Choose Product</div>
+                    </div>
+                    <div class="progress-step" data-step="3">
+                        <div class="step-circle">3</div>
+                        <div class="step-label">Select Plan</div>
+                    </div>
+                    <div class="progress-step" data-step="4">
+                        <div class="step-circle">4</div>
+                        <div class="step-label">Review & Submit</div>
+                    </div>
+                </div>
+
+                <div class="card" style="box-shadow: var(--shadow-xl); padding: 2.5rem;">
+
+                    <!-- ── STEP 1: Business Info ── -->
+                    <div class="step-panel active" id="step1">
+                        <h2 style="margin-bottom: 0.5rem;">Tell us about your business</h2>
+                        <p style="color: var(--text-light); margin-bottom: 2rem;">We'll use this to tailor the right solution for you.</p>
+
+                        <div class="form-group">
+                            <label for="businessName">Business / Brand Name *</label>
+                            <input type="text" id="businessName" class="form-control" required placeholder="e.g. Khaadi, Sapphire, Your Brand">
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="form-group">
+                                <label for="contactName">Your Full Name *</label>
+                                <input type="text" id="contactName" class="form-control" required placeholder="Fahad Imdad">
+                            </div>
+                            <div class="form-group">
+                                <label for="contactRole">Your Role *</label>
+                                <select id="contactRole" class="form-control">
+                                    <option value="">Select role...</option>
+                                    <option>CEO / Founder</option>
+                                    <option>Marketing Manager</option>
+                                    <option>E-commerce Manager</option>
+                                    <option>IT / Tech Lead</option>
+                                    <option>Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="form-group">
+                                <label for="email">Email Address *</label>
+                                <input type="email" id="email" class="form-control" required placeholder="you@yourbrand.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone / WhatsApp *</label>
+                                <input type="tel" id="phone" class="form-control" required placeholder="+92 300 1234567">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="website">Website URL</label>
+                            <input type="url" id="website" class="form-control" placeholder="https://yourbrand.com">
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="form-group">
+                                <label for="businessType">Business Type *</label>
+                                <select id="businessType" class="form-control" required>
+                                    <option value="">Select...</option>
+                                    <option>Online Only (E-commerce)</option>
+                                    <option>Physical Stores Only</option>
+                                    <option>Both Online + Physical</option>
+                                    <option>Marketplace Seller</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="businessSize">Monthly Online Orders</label>
+                                <select id="businessSize" class="form-control">
+                                    <option value="">Select...</option>
+                                    <option>Under 500</option>
+                                    <option>500 – 2,000</option>
+                                    <option>2,000 – 10,000</option>
+                                    <option>10,000+</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="category">Fashion Category *</label>
+                            <select id="category" class="form-control" required>
+                                <option value="">Select...</option>
+                                <option>Women's Fashion</option>
+                                <option>Men's Fashion</option>
+                                <option>Both Women & Men</option>
+                                <option>Children's Fashion</option>
+                                <option>Luxury / Designer</option>
+                                <option>Fabrics / Unstitched</option>
+                                <option>Sportswear</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+
+                        <div class="step-nav">
+                            <span></span>
+                            <button class="btn btn-primary" onclick="goStep(2)">Next: Choose Product →</button>
+                        </div>
+                    </div>
+
+                    <!-- ── STEP 2: Choose Product ── -->
+                    <div class="step-panel" id="step2">
+                        <h2 style="margin-bottom: 0.5rem;">Which product do you need?</h2>
+                        <p style="color: var(--text-light); margin-bottom: 2rem;">You can register for multiple products. Select all that apply.</p>
+
+                        <div class="product-select-grid">
+                            <div class="product-select-card" data-product="ghost-layer" onclick="toggleProduct(this)">
+                                <div class="check">✓</div>
+                                <div class="icon">🌐</div>
+                                <h4>Ghost Layer</h4>
+                                <p>Website widget — virtual try-on embedded into your e-commerce site</p>
+                                <div class="price-hint">From $2,000 + $0.80/try-on</div>
+                            </div>
+                            <div class="product-select-card" data-product="scan-wear" onclick="toggleProduct(this)">
+                                <div class="check">✓</div>
+                                <div class="icon">📱</div>
+                                <h4>Scan & Wear</h4>
+                                <p>QR codes in physical stores — customers scan and try-on instantly</p>
+                                <div class="price-hint">From $1,000 + $0.50/try-on</div>
+                            </div>
+                            <div class="product-select-card" data-product="digital-mirror" onclick="toggleProduct(this)">
+                                <div class="check">✓</div>
+                                <div class="icon">🪞</div>
+                                <h4>Digital Mirror</h4>
+                                <p>Smart mirror hardware for premium boutiques and flagship stores</p>
+                                <div class="price-hint">From $10,000 hardware</div>
+                            </div>
+                        </div>
+
+                        <div id="productError" style="color: #ef4444; font-size: 0.9rem; margin-bottom: 1rem; display: none;">
+                            Please select at least one product to continue.
+                        </div>
+
+                        <!-- Ghost Layer detail (shown when selected) -->
+                        <div id="detail-ghost-layer" class="card" style="background: var(--background-light); display: none; margin-bottom: 1rem;">
+                            <h4>🌐 Ghost Layer — What to expect</h4>
+                            <ul style="margin-left: 1.5rem; margin-top: 0.75rem; color: var(--text-light); line-height: 2;">
+                                <li>5-minute install via Google Tag Manager</li>
+                                <li>Works on any e-commerce platform (Shopify, WooCommerce, custom)</li>
+                                <li>Dashboard to upload garments and view analytics</li>
+                                <li>Social sharing with your brand watermark</li>
+                            </ul>
+                        </div>
+
+                        <!-- Scan & Wear detail -->
+                        <div id="detail-scan-wear" class="card" style="background: var(--background-light); display: none; margin-bottom: 1rem;">
+                            <h4>📱 Scan & Wear — What to expect</h4>
+                            <ul style="margin-left: 1.5rem; margin-top: 0.75rem; color: var(--text-light); line-height: 2;">
+                                <li>QR codes printed on garment tags or store displays</li>
+                                <li>Customers scan with any smartphone camera</li>
+                                <li>No app download required</li>
+                                <li>In-store analytics dashboard included</li>
+                            </ul>
+                        </div>
+
+                        <!-- Digital Mirror detail -->
+                        <div id="detail-digital-mirror" class="card" style="background: var(--background-light); display: none; margin-bottom: 1rem;">
+                            <h4>🪞 Digital Mirror — What to expect</h4>
+                            <ul style="margin-left: 1.5rem; margin-top: 0.75rem; color: var(--text-light); line-height: 2;">
+                                <li>Human-height touchscreen display (55" – 75")</li>
+                                <li>Professional installation by our team</li>
+                                <li>Cloud-connected dashboard for real-time analytics</li>
+                                <li>Hardware warranty + ongoing support included</li>
+                            </ul>
+                        </div>
+
+                        <div class="step-nav">
+                            <button class="btn-back" onclick="goStep(1)">← Back</button>
+                            <button class="btn btn-primary" onclick="goStep(3)">Next: Select Plan →</button>
+                        </div>
+                    </div>
+
+                    <!-- ── STEP 3: Select Plan ── -->
+                    <div class="step-panel" id="step3">
+                        <h2 style="margin-bottom: 0.5rem;">Choose your expected volume</h2>
+                        <p style="color: var(--text-light); margin-bottom: 2rem;">Pricing scales with your usage. No monthly fee — only pay per try-on after setup.</p>
+
+                        <div class="plan-grid">
+                            <div class="plan-card" data-plan="starter" onclick="selectPlan(this)">
+                                <div class="check">✓</div>
+                                <div style="font-size: 0.75rem; color: var(--text-light); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Starter</div>
+                                <div class="plan-price">$0.80<span>/try-on</span></div>
+                                <div class="plan-per">Up to 1,000/month</div>
+                                <ul class="plan-features">
+                                    <li>1 product integration</li>
+                                    <li>Email support</li>
+                                    <li>Basic analytics</li>
+                                    <li>Brand watermark</li>
+                                </ul>
+                            </div>
+                            <div class="plan-card" data-plan="growth" onclick="selectPlan(this)">
+                                <div class="check">✓</div>
+                                <div class="plan-badge">Most Popular</div>
+                                <div class="plan-price">$0.65<span>/try-on</span></div>
+                                <div class="plan-per">1,000 – 10,000/month</div>
+                                <ul class="plan-features">
+                                    <li>Unlimited integrations</li>
+                                    <li>Priority support</li>
+                                    <li>Full analytics dashboard</li>
+                                    <li>Social sharing tools</li>
+                                </ul>
+                            </div>
+                            <div class="plan-card" data-plan="enterprise" onclick="selectPlan(this)">
+                                <div class="check">✓</div>
+                                <div style="font-size: 0.75rem; color: var(--text-light); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Enterprise</div>
+                                <div class="plan-price">$0.45<span>/try-on</span></div>
+                                <div class="plan-per">10,000+/month</div>
+                                <ul class="plan-features">
+                                    <li>Dedicated account manager</li>
+                                    <li>24/7 phone support</li>
+                                    <li>Custom integrations</li>
+                                    <li>SLA guarantee</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div id="planError" style="color: #ef4444; font-size: 0.9rem; margin-bottom: 1rem; display: none;">
+                            Please select a plan to continue.
+                        </div>
+
+                        <div class="card" style="background: var(--background-light);">
+                            <p style="font-size: 0.875rem; color: var(--text-light); margin: 0;">
+                                💡 <strong>Note:</strong> All plans require a one-time setup fee (Ghost Layer: $2,000–$3,000 · Scan & Wear: $1,000–$2,000 · Digital Mirror: $10,000–$30,000 hardware + $2,000–$5,000 setup). Final pricing is confirmed after your onboarding call.
+                            </p>
+                        </div>
+
+                        <div class="step-nav">
+                            <button class="btn-back" onclick="goStep(2)">← Back</button>
+                            <button class="btn btn-primary" onclick="goStep(4)">Next: Review →</button>
+                        </div>
+                    </div>
+
+                    <!-- ── STEP 4: Review & Submit ── -->
+                    <div class="step-panel" id="step4">
+                        <h2 style="margin-bottom: 0.5rem;">Review your registration</h2>
+                        <p style="color: var(--text-light); margin-bottom: 2rem;">Check your details below, then submit. Our team will contact you within 24 hours.</p>
+
+                        <div class="reg-summary" id="summaryBox"></div>
+
+                        <div class="form-group">
+                            <label for="notes">Anything else we should know? (Optional)</label>
+                            <textarea id="notes" class="form-control" placeholder="Tell us about your current platform, any specific requirements, or questions you have..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="display: flex; align-items: flex-start; gap: 0.75rem; cursor: pointer; font-weight: 400;">
+                                <input type="checkbox" id="agreeTerms" style="margin-top: 3px; flex-shrink: 0;">
+                                <span>I agree to Try Instant Fit's <a href="#" style="color: var(--secondary-color);">Terms of Service</a> and <a href="#" style="color: var(--secondary-color);">Privacy Policy</a>. I understand this registration is not a binding contract — our team will confirm pricing and details on the onboarding call. *</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="display: flex; align-items: flex-start; gap: 0.75rem; cursor: pointer; font-weight: 400;">
+                                <input type="checkbox" id="agreeContact" style="margin-top: 3px; flex-shrink: 0;" checked>
+                                <span>I'd like to receive product updates and tips from Try Instant Fit.</span>
+                            </label>
+                        </div>
+
+                        <div id="submitError" style="color: #ef4444; font-size: 0.9rem; margin-bottom: 1rem; display: none;"></div>
+
+                        <div class="step-nav">
+                            <button class="btn-back" onclick="goStep(3)">← Back</button>
+                            <button class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2.5rem;" onclick="submitRegistration()">
+                                Submit Registration →
+                            </button>
+                        </div>
+                    </div>
+
+                </div><!-- /card -->
+
+                <!-- Success Screen (outside card) -->
+                <div class="success-screen" id="successScreen">
+                    <div class="checkmark">✓</div>
+                    <h2 style="color: var(--primary-color);">You're Registered!</h2>
+                    <p style="font-size: 1.1rem; color: var(--text-light); max-width: 480px; margin: 1rem auto 2rem;">
+                        Thank you! We've received your registration and will contact you within <strong>24 hours</strong> to schedule your onboarding call.
+                    </p>
+                    <div id="confirmDetails" style="background: var(--background-light); border-radius: var(--radius-lg); padding: 1.5rem; max-width: 460px; margin: 0 auto 2rem; text-align: left;"></div>
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <a href="index.html" class="btn btn-secondary">Back to Home</a>
+                        <a href="demo.html" class="btn btn-primary">Also Book a Demo</a>
+                    </div>
+                </div>
+
+            </div><!-- /reg-wrap -->
+        </div>
+    </section>
+
+    <!-- Trust Strip -->
+    <section class="section section-alt" style="padding: 3rem 0;">
+        <div class="container">
+            <div class="card-grid" style="grid-template-columns: repeat(4, 1fr); max-width: 900px; margin: 0 auto;">
+                <div style="text-align: center;">
+                    <div style="font-size: 1.75rem; margin-bottom: 0.5rem;">⚡</div>
+                    <p style="font-size: 0.875rem; font-weight: 600; margin: 0;">Onboarding in Days</p>
+                    <p style="font-size: 0.8rem; color: var(--text-light); margin: 0;">Not weeks or months</p>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 1.75rem; margin-bottom: 0.5rem;">🔒</div>
+                    <p style="font-size: 0.875rem; font-weight: 600; margin: 0;">No Lock-In</p>
+                    <p style="font-size: 0.8rem; color: var(--text-light); margin: 0;">Pay as you use</p>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 1.75rem; margin-bottom: 0.5rem;">🧑‍💼</div>
+                    <p style="font-size: 0.875rem; font-weight: 600; margin: 0;">Dedicated Support</p>
+                    <p style="font-size: 0.8rem; color: var(--text-light); margin: 0;">Real humans, not bots</p>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 1.75rem; margin-bottom: 0.5rem;">🇵🇰</div>
+                    <p style="font-size: 0.875rem; font-weight: 600; margin: 0;">Pakistan-Based Team</p>
+                    <p style="font-size: 0.8rem; color: var(--text-light); margin: 0;">Local support, global tech</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4>Try Instant<span style="color: var(--secondary-color);">Fit</span></h4>
+                    <p style="color: rgba(255, 255, 255, 0.8);">AI-powered virtual try-on technology for modern fashion retailers.</p>
+                </div>
+                <div>
+                    <h4>Products</h4>
+                    <ul class="footer-links">
+                        <li><a href="products.html#ghost-layer">Ghost Layer Widget</a></li>
+                        <li><a href="products.html#scan-wear">Scan & Wear QR</a></li>
+                        <li><a href="products.html#digital-mirror">Digital Mirror</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Company</h4>
+                    <ul class="footer-links">
+                        <li><a href="how-it-works.html">How It Works</a></li>
+                        <li><a href="pricing.html">Pricing</a></li>
+                        <li><a href="register.html">Register</a></li>
+                        <li><a href="demo.html">Book Demo</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Contact</h4>
+                    <ul class="footer-links">
+                        <li><a href="mailto:hello@tryinstantfit.com">hello@tryinstantfit.com</a></li>
+                        <li><a href="https://wa.me/923001234567">WhatsApp Us</a></li>
+                        <li><a href="#location">Pakistan → Global</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Try Instant Fit. All rights reserved. Powered by Google Cloud & IDM-VTON Technology.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script>
+        // ── State ──
+        const state = {
+            step: 1,
+            products: [],
+            plan: null,
+            business: {}
+        };
+
+        // ── Step navigation ──
+        function goStep(n) {
+            if (n > state.step) {
+                // Validate current step before advancing
+                if (state.step === 1 && !validateStep1()) return;
+                if (state.step === 2 && !validateStep2()) return;
+                if (state.step === 3 && !validateStep3()) return;
+            }
+
+            // Hide current, show next
+            document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('step' + n).classList.add('active');
+
+            // Update progress bar
+            document.querySelectorAll('.progress-step').forEach((s, i) => {
+                s.classList.remove('active', 'done');
+                if (i + 1 < n) s.classList.add('done');
+                if (i + 1 === n) s.classList.add('active');
+            });
+
+            state.step = n;
+
+            if (n === 4) buildSummary();
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ── Validation ──
+        function validateStep1() {
+            const req = ['businessName', 'contactName', 'email', 'phone', 'businessType', 'category'];
+            for (const id of req) {
+                const el = document.getElementById(id);
+                if (!el.value.trim()) {
+                    el.focus();
+                    el.style.borderColor = '#ef4444';
+                    el.addEventListener('input', () => el.style.borderColor = '', { once: true });
+                    return false;
+                }
+            }
+            state.business = {
+                name: document.getElementById('businessName').value,
+                contact: document.getElementById('contactName').value,
+                role: document.getElementById('contactRole').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                website: document.getElementById('website').value,
+                type: document.getElementById('businessType').value,
+                size: document.getElementById('businessSize').value,
+                category: document.getElementById('category').value,
+            };
+            return true;
+        }
+
+        function validateStep2() {
+            if (state.products.length === 0) {
+                document.getElementById('productError').style.display = 'block';
+                return false;
+            }
+            document.getElementById('productError').style.display = 'none';
+            return true;
+        }
+
+        function validateStep3() {
+            if (!state.plan) {
+                document.getElementById('planError').style.display = 'block';
+                return false;
+            }
+            document.getElementById('planError').style.display = 'none';
+            return true;
+        }
+
+        // ── Product selection ──
+        function toggleProduct(card) {
+            const product = card.dataset.product;
+            card.classList.toggle('selected');
+            const detail = document.getElementById('detail-' + product);
+
+            if (card.classList.contains('selected')) {
+                state.products.push(product);
+                if (detail) detail.style.display = 'block';
+            } else {
+                state.products = state.products.filter(p => p !== product);
+                if (detail) detail.style.display = 'none';
+            }
+            document.getElementById('productError').style.display = 'none';
+        }
+
+        // ── Plan selection ──
+        function selectPlan(card) {
+            document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            state.plan = card.dataset.plan;
+            document.getElementById('planError').style.display = 'none';
+        }
+
+        // ── Build summary ──
+        const productNames = {
+            'ghost-layer': '🌐 Ghost Layer (Website Widget)',
+            'scan-wear': '📱 Scan & Wear (QR Codes)',
+            'digital-mirror': '🪞 Digital Mirror (Hardware)'
+        };
+        const planNames = {
+            starter: 'Starter — up to 1,000 try-ons/mo @ $0.80/try-on',
+            growth: 'Growth — 1,000–10,000 try-ons/mo @ $0.65/try-on',
+            enterprise: 'Enterprise — 10,000+/mo @ $0.45/try-on'
+        };
+
+        function buildSummary() {
+            const b = state.business;
+            const rows = [
+                ['Business', b.name],
+                ['Contact', `${b.contact}${b.role ? ' (' + b.role + ')' : ''}`],
+                ['Email', b.email],
+                ['Phone', b.phone],
+                ['Business Type', b.type],
+                ['Fashion Category', b.category],
+                ['Products Selected', state.products.map(p => productNames[p]).join('<br>')],
+                ['Volume Plan', planNames[state.plan]],
+            ];
+            document.getElementById('summaryBox').innerHTML = rows.map((r, i) =>
+                `<div class="summary-row">
+                    <span style="color: var(--text-light); font-size: 0.85rem;">${r[0]}</span>
+                    <span style="text-align: right; max-width: 60%;">${r[1]}</span>
+                </div>`
+            ).join('');
+        }
+
+        // ── Submit ──
+        function submitRegistration() {
+            const agree = document.getElementById('agreeTerms');
+            const errEl = document.getElementById('submitError');
+            if (!agree.checked) {
+                errEl.textContent = 'Please agree to the Terms of Service to continue.';
+                errEl.style.display = 'block';
+                return;
+            }
+            errEl.style.display = 'none';
+
+            const b = state.business;
+            // In production: POST to backend / Formspree / Supabase
+            console.log('Registration submitted:', { ...state });
+
+            // Show success
+            document.querySelector('.card').style.display = 'none';
+            document.querySelector('.progress-bar').style.display = 'none';
+            const success = document.getElementById('successScreen');
+            success.style.display = 'block';
+
+            document.getElementById('confirmDetails').innerHTML = `
+                <div style="font-size: 0.9rem; line-height: 1.8;">
+                    <strong>Business:</strong> ${b.name}<br>
+                    <strong>Email:</strong> ${b.email}<br>
+                    <strong>Phone:</strong> ${b.phone}<br>
+                    <strong>Products:</strong> ${state.products.map(p => productNames[p]).join(', ')}<br>
+                    <strong>Plan:</strong> ${planNames[state.plan]}
+                </div>
+            `;
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
