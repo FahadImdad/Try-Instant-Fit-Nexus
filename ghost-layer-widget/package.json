@@ -1,0 +1,14 @@
+{
+  "name": "ghostlayer-widget",
+  "version": "1.0.0",
+  "description": "Ghost Layer virtual try-on widget SDK for fashion e-commerce",
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --minify --outfile=dist/ghostlayer-widget.js --target=es2020",
+    "build:dev": "esbuild src/index.ts --bundle --outfile=dist/ghostlayer-widget.dev.js --target=es2020",
+    "dev": "esbuild src/index.ts --bundle --outfile=dist/ghostlayer-widget.dev.js --target=es2020 --watch"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "esbuild": "^0.19.0"
+  }
+}

@@ -1,0 +1,15 @@
+# deps
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# env — never commit these
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+.vercel
