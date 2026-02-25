@@ -1,33 +1,20 @@
-import { VertexAI } from '@google-cloud/vertexai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-let _vertexAI: VertexAI | null = null;
+let _genAI: GoogleGenerativeAI | null = null;
 
-export function getVertexAI(): VertexAI {
-  if (_vertexAI) return _vertexAI;
+export function getGenAI(): GoogleGenerativeAI {
+  if (_genAI) return _genAI;
 
-  const project = process.env.GOOGLE_CLOUD_PROJECT_ID;
-  if (!project) throw new Error('GOOGLE_CLOUD_PROJECT_ID is required');
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) throw new Error('GEMINI_API_KEY is required');
 
-  let credentials: object | undefined;
-  if (process.env.GOOGLE_CLOUD_KEY_JSON) {
-    try {
-      credentials = JSON.parse(process.env.GOOGLE_CLOUD_KEY_JSON);
-    } catch {
-      throw new Error('GOOGLE_CLOUD_KEY_JSON must be valid JSON');
-    }
-  }
-
-  _vertexAI = new VertexAI({
-    project,
-    location: process.env.VERTEX_LOCATION ?? 'us-central1',
-    googleAuthOptions: credentials ? { credentials } : undefined,
-  });
-
-  return _vertexAI;
+  _genAI = new GoogleGenerativeAI(apiKey);
+  return _genAI;
 }
 
-// gemini-2.0-flash-exp supports responseModalities: IMAGE on Vertex AI
-export const TRYON_MODEL = 'gemini-2.0-flash-exp';
+// Image generation model — requires a paid-tier API key
+// (free tier quota = 0; use a key from a billing-enabled Google Cloud project)
+export const TRYON_MODEL = 'gemini-2.0-flash-exp-image-generation';
 
 export const TRYON_PROMPT = `You are a virtual try-on AI. Generate a realistic photo showing the person wearing the garment.
 
