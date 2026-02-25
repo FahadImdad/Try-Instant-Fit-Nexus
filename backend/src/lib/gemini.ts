@@ -2,7 +2,7 @@ import { GoogleAuth } from 'google-auth-library';
 
 // Google AI API — gemini-2.0-flash-exp-image-generation supports native image output
 // Requires OAuth2 (not API keys); uses service account from GOOGLE_CLOUD_KEY_JSON
-export const TRYON_MODEL = 'gemini-2.0-flash-exp-image-generation';
+export const TRYON_MODEL = 'gemini-3-pro-image-preview';
 
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${TRYON_MODEL}:generateContent`;
 
