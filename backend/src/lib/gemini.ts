@@ -1,10 +1,11 @@
 import { GoogleAuth } from 'google-auth-library';
 
-// gemini-2.0-flash-exp-image-generation requires OAuth2 (not API keys).
-// We authenticate using the service account from GOOGLE_CLOUD_KEY_JSON.
-export const TRYON_MODEL = 'gemini-2.0-flash-exp-image-generation';
+// Vertex AI — gemini-3-pro-image-preview supports native image generation output
+export const TRYON_MODEL = 'gemini-3-pro-image-preview';
 
-const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${TRYON_MODEL}:generateContent`;
+const PROJECT = process.env.GOOGLE_CLOUD_PROJECT_ID ?? 'tryinstantfit-api';
+const LOCATION = 'us-central1';
+const API_URL = `https://${LOCATION}-aiplatform.googleapis.com/v1/projects/${PROJECT}/locations/${LOCATION}/publishers/google/models/${TRYON_MODEL}:generateContent`;
 
 async function getAccessToken(): Promise<string> {
   const keyJson = process.env.GOOGLE_CLOUD_KEY_JSON;
@@ -13,7 +14,7 @@ async function getAccessToken(): Promise<string> {
   const credentials = JSON.parse(keyJson);
   const auth = new GoogleAuth({
     credentials,
-    scopes: ['https://www.googleapis.com/auth/generative-language'],
+    scopes: ['https://www.googleapis.com/auth/cloud-platform'],
   });
 
   const client = await auth.getClient();
@@ -37,7 +38,7 @@ export async function generateContent(requestBody: object): Promise<any> {
 
   if (!response.ok) {
     const text = await response.text();
-    throw new Error(`Gemini API ${response.status}: ${text}`);
+    throw new Error(`Vertex AI ${response.status}: ${text}`);
   }
 
   return response.json();
