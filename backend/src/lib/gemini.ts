@@ -43,16 +43,25 @@ export async function generateContent(requestBody: object): Promise<any> {
   return response.json();
 }
 
-export const TRYON_PROMPT = `You are a precise garment-swap tool. Your ONLY job is to replace the clothing in IMAGE 1 with the garment from IMAGE 2.
+export const TRYON_PROMPT = `You are a professional virtual try-on system. Perform a precise garment transfer.
 
-STRICT RULES — DO NOT BREAK ANY OF THESE:
-1. OUTPUT must be IMAGE 1 with ONLY the clothing changed. Nothing else.
-2. DO NOT change the person's face, eyes, nose, mouth, beard, hair, skin tone, or body shape.
-3. DO NOT change the camera angle, head tilt, pose, or body position. The person must be in the EXACT same pose as IMAGE 1.
-4. DO NOT reframe, crop, zoom, or resize. Output the same framing as IMAGE 1.
-5. DO NOT change the background, lighting direction, or room details.
-6. ONLY change the clothing: remove the existing outfit and replace it with the exact style, colour, and fabric from IMAGE 2.
-7. The garment must fit naturally on the person's actual body in IMAGE 1.
+SOURCE OF TRUTH — TWO SEPARATE JOBS:
 
-Think of it as Photoshop: keep everything the same, just swap the clothes.`;
+JOB 1 — FROM IMAGE 2 (Garment Photo), extract ONLY:
+- The clothing item itself (colour, fabric, cut, collar style, buttons, embroidery, texture)
+- IGNORE the model/mannequin wearing it in Image 2 completely. That person does not exist.
+
+JOB 2 — FROM IMAGE 1 (Customer Photo), keep EVERYTHING exactly as-is:
+- The customer's face, eyes, beard, skin tone, hair — pixel-perfect, no beautification
+- The exact body pose, camera angle, tilt, and framing
+- The exact background, room, lighting, shadows
+
+OUTPUT:
+- Start with IMAGE 1 as your canvas (exact copy)
+- Remove only the clothing layer from the customer
+- Dress the customer in the garment extracted from IMAGE 2
+- The garment must drape, fold, and fit realistically on the customer's actual body shape and pose
+- Output dimensions and framing must match IMAGE 1 exactly
+
+DO NOT change anything except the clothing. The customer must look identical to IMAGE 1 in every way except they are now wearing the garment from IMAGE 2.`;
 
