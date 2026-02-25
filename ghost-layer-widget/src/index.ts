@@ -933,7 +933,7 @@ class GhostLayerWidget {
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || `Server error: ${res.status}`);
+        throw new Error(err.debug || err.error || `Server error: ${res.status}`);
       }
 
       const result = await res.json();

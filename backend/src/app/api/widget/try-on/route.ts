@@ -137,10 +137,12 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     const processingTimeMs = Date.now() - startTime;
-    console.error('[try-on] Unhandled error:', error);
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error('[try-on] Unhandled error:', msg, error);
     return NextResponse.json(
       {
         error: 'Something went wrong generating your try-on. Please try again.',
+        debug: msg,
         processing_time_ms: processingTimeMs,
       },
       { status: 500 }
