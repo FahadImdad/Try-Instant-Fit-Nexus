@@ -13,7 +13,7 @@ async function getAccessToken(): Promise<string> {
   const credentials = JSON.parse(keyJson);
   const auth = new GoogleAuth({
     credentials,
-    scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+    scopes: ['https://www.googleapis.com/auth/generative-language'],
   });
 
   const client = await auth.getClient();
