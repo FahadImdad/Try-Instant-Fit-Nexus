@@ -1,10 +1,8 @@
 import { GoogleAuth } from 'google-auth-library';
 
-// Google AI API — gemini-2.0-flash-exp-image-generation supports native image output
-// Requires OAuth2 (not API keys); uses service account from GOOGLE_CLOUD_KEY_JSON
 export const TRYON_MODEL = 'gemini-3-pro-image-preview';
 
-const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${TRYON_MODEL}:generateContent`;
+const BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
 
 async function getAccessToken(): Promise<string> {
   const keyJson = process.env.GOOGLE_CLOUD_KEY_JSON;
@@ -18,7 +16,7 @@ async function getAccessToken(): Promise<string> {
 
   const client = await auth.getClient();
   const { token } = await client.getAccessToken();
-  if (!token) throw new Error('Failed to get OAuth2 access token from service account');
+  if (!token) throw new Error('Failed to get OAuth2 access token');
   return token;
 }
 
@@ -26,7 +24,7 @@ async function getAccessToken(): Promise<string> {
 export async function generateContent(requestBody: object): Promise<any> {
   const token = await getAccessToken();
 
-  const response = await fetch(API_URL, {
+  const response = await fetch(`${BASE_URL}/${TRYON_MODEL}:generateContent`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -43,25 +41,60 @@ export async function generateContent(requestBody: object): Promise<any> {
   return response.json();
 }
 
-export const TRYON_PROMPT = `You are a professional virtual try-on system. Perform a precise garment transfer.
+// Step 1: Isolate the garment from the product image (remove model/mannequin)
+export async function isolateGarment(
+  productBase64: string,
+  productMimeType: string
+): Promise<{ data: string; mimeType: string }> {
+  const result = await generateContent({
+    contents: [
+      {
+        role: 'user',
+        parts: [
+          {
+            text: `This is a product catalog photo showing a garment worn by a model or mannequin.
+Your task: output an image of ONLY the garment item, completely isolated on a plain white background.
+- Remove the model/mannequin entirely — keep ONLY the clothing
+- Remove the background
+- Show the garment flat or as if on an invisible hanger, at full size
+- CRITICAL — preserve the EXACT color: if the garment is sky blue, it must be sky blue in the output. If it is maroon, it must be maroon. Do not lighten, darken, or shift the color at all.
+- Preserve all details exactly: fabric texture, collar style, sleeve length, buttons, embroidery, cut, and any patterns
+Output: just the garment on a white background with its exact original color and details intact.`,
+          },
+          { inlineData: { data: productBase64, mimeType: productMimeType } },
+        ],
+      },
+    ],
+    generationConfig: { responseModalities: ['IMAGE', 'TEXT'] },
+  });
 
-SOURCE OF TRUTH — TWO SEPARATE JOBS:
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const parts: any[] = result.candidates?.[0]?.content?.parts ?? [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const imagePart = parts.find((p: any) => p.inlineData?.mimeType?.startsWith('image/'));
+  if (!imagePart?.inlineData?.data) {
+    throw new Error('Could not isolate garment from product image');
+  }
+  return { data: imagePart.inlineData.data, mimeType: imagePart.inlineData.mimeType };
+}
 
-JOB 1 — FROM IMAGE 2 (Garment Photo), extract ONLY:
-- The clothing item itself (colour, fabric, cut, collar style, buttons, embroidery, texture)
-- IGNORE the model/mannequin wearing it in Image 2 completely. That person does not exist.
+// System instruction for the try-on step
+export const TRYON_SYSTEM_INSTRUCTION = `You are a photo editing AI that performs clothing swaps. You receive a customer photo and an isolated garment image (garment on white background, no person). Your job is to place the garment onto the customer exactly as they appear — preserving their face, body, pose, and background completely. You only change the clothing.`;
 
-JOB 2 — FROM IMAGE 1 (Customer Photo), keep EVERYTHING exactly as-is:
-- The customer's face, eyes, beard, skin tone, hair — pixel-perfect, no beautification
-- The exact body pose, camera angle, tilt, and framing
-- The exact background, room, lighting, shadows
+export const TRYON_PROMPT = `You will receive two images:
 
-OUTPUT:
-- Start with IMAGE 1 as your canvas (exact copy)
-- Remove only the clothing layer from the customer
-- Dress the customer in the garment extracted from IMAGE 2
-- The garment must drape, fold, and fit realistically on the customer's actual body shape and pose
-- Output dimensions and framing must match IMAGE 1 exactly
+IMAGE 1 — ISOLATED GARMENT (on white background, no person):
+This shows a clothing item on a plain white background. Use this as your garment reference — its exact color, fabric, texture, collar, sleeves, buttons, and all design details.
+There is no model or pose to copy from this image.
 
-DO NOT change anything except the clothing. The customer must look identical to IMAGE 1 in every way except they are now wearing the garment from IMAGE 2.`;
+IMAGE 2 — CUSTOMER PHOTO (your canvas):
+This is the real person's photo that you will edit. Preserve EVERYTHING exactly:
+- Face: same person, same skin tone, same beard, same hair, same eyes — do not change
+- Pose: exact same body position — if lying down, keep lying down; if sitting, keep sitting; if standing, keep standing
+- Body: same build, same proportions — do not change
+- Background: same room, same surface, same lighting — do not change
 
+THE ONLY CHANGE: Replace the clothing in IMAGE 2 with the garment from IMAGE 1.
+Fit the garment naturally onto the person in their exact pose as shown in IMAGE 2.
+
+OUTPUT: IMAGE 2 with only the clothing swapped. Everything else unchanged.`;

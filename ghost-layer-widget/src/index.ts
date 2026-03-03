@@ -33,6 +33,9 @@ class GhostLayerWidget {
   private cameraStream: MediaStream | null = null;
   private selectedFile: File | null = null;
   private countdownTimer: number | null = null;
+  private lightingInterval: number | null = null;
+  private lastBrightness = 128;
+  private selectedProvider = 'gemini';
 
   constructor(brandId: string) {
     this.brandId = brandId;
@@ -414,16 +417,31 @@ class GhostLayerWidget {
 
           <!-- Camera Panel -->
           <div id="gl-panel-camera" style="display:none">
+            <div class="gl-lighting-bar" id="gl-lighting-bar">
+              <span class="gl-lighting-dot" id="gl-lighting-dot"></span>
+              <span class="gl-lighting-text" id="gl-lighting-text">Starting camera...</span>
+            </div>
             <div class="gl-camera-wrap" id="gl-camera-wrap">
               <video id="gl-camera-video" class="gl-camera-video" autoplay playsinline muted></video>
               <canvas id="gl-camera-canvas" style="display:none" width="640" height="480"></canvas>
+              <div class="gl-body-guide" id="gl-body-guide">
+                <svg class="gl-silhouette" viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="50" cy="22" r="16" stroke="rgba(255,255,255,0.55)" stroke-width="2.5" stroke-dasharray="4 2"/>
+                  <path d="M34 38 Q50 33 66 38 L70 90 L30 90 Z" stroke="rgba(255,255,255,0.55)" stroke-width="2.5" stroke-dasharray="4 2" fill="none"/>
+                  <path d="M34 40 L18 78" stroke="rgba(255,255,255,0.55)" stroke-width="2.5" stroke-dasharray="4 2" stroke-linecap="round"/>
+                  <path d="M66 40 L82 78" stroke="rgba(255,255,255,0.55)" stroke-width="2.5" stroke-dasharray="4 2" stroke-linecap="round"/>
+                  <path d="M37 90 L33 142" stroke="rgba(255,255,255,0.55)" stroke-width="2.5" stroke-dasharray="4 2" stroke-linecap="round"/>
+                  <path d="M63 90 L67 142" stroke="rgba(255,255,255,0.55)" stroke-width="2.5" stroke-dasharray="4 2" stroke-linecap="round"/>
+                </svg>
+                <div class="gl-guide-text">Stand upright · Full body · Face forward</div>
+              </div>
               <div class="gl-countdown-overlay" id="gl-countdown-overlay" style="display:none">
                 <div class="gl-countdown-num" id="gl-countdown-num">5</div>
               </div>
             </div>
             <div class="gl-camera-controls" id="gl-camera-controls">
-              <button class="gl-cam-btn gl-capture-btn" id="gl-capture-now">📸 Capture Now</button>
-              <button class="gl-cam-btn gl-timer-btn" id="gl-timer-btn">⏱ 5s Timer</button>
+              <button class="gl-cam-btn gl-capture-btn" id="gl-capture-now" disabled>📸 Capture Now</button>
+              <button class="gl-cam-btn gl-timer-btn" id="gl-timer-btn" disabled>⏱ 5s Timer</button>
             </div>
             <div class="gl-camera-error" id="gl-camera-error" style="display:none">
               📵 Camera not available. Allow camera access or use Upload instead.
@@ -434,6 +452,14 @@ class GhostLayerWidget {
             </div>
           </div>
 
+          <div class="gl-provider-selector">
+            <div class="gl-provider-label">AI Engine:</div>
+            <div class="gl-provider-options" id="gl-provider-options">
+              <button class="gl-provider-opt gl-provider-active" data-provider="gemini">Gemini</button>
+              <button class="gl-provider-opt" data-provider="fashn">Fashn.ai</button>
+              <button class="gl-provider-opt" data-provider="replicate">IDM-VTON (Free)</button>
+            </div>
+          </div>
           <button class="gl-primary-btn" id="gl-generate-btn" disabled>Generate Try-On</button>
           <p class="gl-privacy">🔒 Your photo is never stored. Processed securely and deleted immediately.</p>
         </div>
@@ -591,6 +617,38 @@ class GhostLayerWidget {
         padding: 10px 12px; background: #fef2f2; border-radius: 8px; margin-bottom: 10px;
       }
 
+      /* Lighting indicator */
+      .gl-lighting-bar {
+        display: flex; align-items: center; gap: 7px;
+        padding: 6px 10px; border-radius: 8px;
+        background: #f9fafb; border: 1px solid #e5e7eb;
+        margin-bottom: 8px; font-size: 12px; color: #374151;
+      }
+      .gl-lighting-dot {
+        width: 10px; height: 10px; border-radius: 50%;
+        background: #9ca3af; flex-shrink: 0;
+        transition: background 0.4s;
+      }
+      .gl-lighting-text { font-weight: 500; flex: 1; }
+
+      /* Body guide overlay */
+      .gl-body-guide {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        pointer-events: none;
+      }
+      .gl-silhouette {
+        width: 38%; max-width: 110px; opacity: 0.85;
+        margin-bottom: 8px;
+      }
+      .gl-guide-text {
+        font-size: 11px; color: rgba(255,255,255,0.92);
+        background: rgba(0,0,0,0.48); border-radius: 20px;
+        padding: 4px 10px; font-weight: 600; letter-spacing: 0.2px;
+        text-align: center;
+      }
+
       /* Preview */
       .gl-preview-wrap { position: relative; margin-bottom: 12px; text-align: center; }
       .gl-preview-img {
@@ -628,6 +686,21 @@ class GhostLayerWidget {
       .gl-ghost-btn:hover { border-color: #d1d5db; }
 
       .gl-privacy { font-size: 11px; color: #9ca3af; text-align: center; margin-top: 8px; line-height: 1.4; }
+
+      /* Provider selector */
+      .gl-provider-selector {
+        display: flex; align-items: center; gap: 8px;
+        margin-bottom: 10px; flex-wrap: wrap;
+      }
+      .gl-provider-label { font-size: 11px; font-weight: 600; color: #6b7280; white-space: nowrap; }
+      .gl-provider-options { display: flex; gap: 5px; flex: 1; }
+      .gl-provider-opt {
+        flex: 1; padding: 6px 4px; border: 1.5px solid #e5e7eb; border-radius: 8px;
+        background: #fff; font-size: 11px; font-weight: 600; color: #6b7280;
+        cursor: pointer; transition: all 0.15s; text-align: center; white-space: nowrap;
+      }
+      .gl-provider-opt:hover { border-color: #6366f1; color: #6366f1; }
+      .gl-provider-active { background: #1a1a2e; border-color: #1a1a2e; color: #fff; }
 
       /* Processing */
       .gl-spinner {
@@ -676,6 +749,18 @@ class GhostLayerWidget {
 
     if (step === 'upload') {
       const generateBtn = root.getElementById('gl-generate-btn') as HTMLButtonElement | null;
+
+      // ── Provider selector ──
+      const providerOptions = root.getElementById('gl-provider-options');
+      providerOptions?.querySelectorAll('.gl-provider-opt').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          this.selectedProvider = (btn as HTMLElement).dataset.provider ?? 'gemini';
+          providerOptions.querySelectorAll('.gl-provider-opt').forEach((b) =>
+            b.classList.remove('gl-provider-active')
+          );
+          btn.classList.add('gl-provider-active');
+        });
+      });
 
       const setFile = (file: File) => {
         this.selectedFile = file;
@@ -758,11 +843,13 @@ class GhostLayerWidget {
         const cameraControls = root.getElementById('gl-camera-controls');
         const captureBtn = root.getElementById('gl-capture-now') as HTMLButtonElement | null;
         const timerBtn = root.getElementById('gl-timer-btn') as HTMLButtonElement | null;
+        const lightingBar = root.getElementById('gl-lighting-bar');
         if (cameraPreviewWrap) cameraPreviewWrap.style.display = 'none';
         if (cameraWrap) cameraWrap.style.display = 'block';
         if (cameraControls) cameraControls.style.display = 'flex';
-        if (captureBtn) captureBtn.disabled = false;
-        if (timerBtn) timerBtn.disabled = false;
+        if (lightingBar) lightingBar.style.display = 'flex';
+        if (captureBtn) captureBtn.disabled = true;
+        if (timerBtn) timerBtn.disabled = true;
         await this.startCamera(root);
       });
 
@@ -815,8 +902,7 @@ class GhostLayerWidget {
       if (video) video.srcObject = stream;
       if (cameraWrap) cameraWrap.style.display = 'block';
       if (errorEl) errorEl.style.display = 'none';
-      if (captureBtn) captureBtn.disabled = false;
-      if (timerBtn) timerBtn.disabled = false;
+      this.monitorLighting(root);
     } catch (_err) {
       if (errorEl) errorEl.style.display = 'block';
       if (cameraWrap) cameraWrap.style.display = 'none';
@@ -836,7 +922,13 @@ class GhostLayerWidget {
     if (!ctx) return;
 
     // Draw un-mirrored (as camera sees it) for AI processing
+    // Boost brightness if lighting was poor (brightness < 80 on 0-255 scale)
+    if (this.lastBrightness > 0 && this.lastBrightness < 80) {
+      const boost = Math.min(2.0, 100 / Math.max(this.lastBrightness, 20));
+      ctx.filter = `brightness(${boost.toFixed(2)})`;
+    }
     ctx.drawImage(video, 0, 0);
+    ctx.filter = 'none';
 
     this.stopCamera();
 
@@ -847,6 +939,7 @@ class GhostLayerWidget {
 
         const cameraWrap = root.getElementById('gl-camera-wrap');
         const cameraControls = root.getElementById('gl-camera-controls');
+        const lightingBar = root.getElementById('gl-lighting-bar');
         const previewWrap = root.getElementById('gl-camera-preview-wrap');
         const previewImg = root.getElementById('gl-camera-preview-img') as HTMLImageElement | null;
 
@@ -854,6 +947,7 @@ class GhostLayerWidget {
         if (previewImg) previewImg.src = url;
         if (cameraWrap) cameraWrap.style.display = 'none';
         if (cameraControls) cameraControls.style.display = 'none';
+        if (lightingBar) lightingBar.style.display = 'none';
         if (previewWrap) previewWrap.style.display = 'block';
 
         setFile(file);
@@ -861,6 +955,54 @@ class GhostLayerWidget {
       'image/jpeg',
       0.92,
     );
+  }
+
+  private monitorLighting(root: ShadowRoot): void {
+    if (this.lightingInterval) {
+      clearInterval(this.lightingInterval);
+      this.lightingInterval = null;
+    }
+
+    const video = root.getElementById('gl-camera-video') as HTMLVideoElement | null;
+    const dot = root.getElementById('gl-lighting-dot');
+    const text = root.getElementById('gl-lighting-text');
+    const captureBtn = root.getElementById('gl-capture-now') as HTMLButtonElement | null;
+    const timerBtn = root.getElementById('gl-timer-btn') as HTMLButtonElement | null;
+
+    const sample = document.createElement('canvas');
+    sample.width = 64;
+    sample.height = 48;
+    const ctx = sample.getContext('2d');
+
+    this.lightingInterval = window.setInterval(() => {
+      if (!ctx || !video || !video.videoWidth) return;
+      ctx.drawImage(video, 0, 0, 64, 48);
+      const data = ctx.getImageData(0, 0, 64, 48).data;
+      let total = 0;
+      for (let i = 0; i < data.length; i += 4) {
+        total += 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+      }
+      const brightness = total / (64 * 48);
+      this.lastBrightness = brightness;
+
+      const good = brightness >= 80;
+      const ok = brightness >= 50;
+
+      if (dot) dot.style.background = good ? '#22c55e' : ok ? '#f59e0b' : '#ef4444';
+      if (text) {
+        text.textContent = good
+          ? '✓ Good lighting'
+          : ok
+          ? '⚠ Brighter light will improve results'
+          : '✗ Too dark — move to better lighting';
+      }
+
+      // Only control buttons when no countdown is active
+      if (!this.countdownTimer) {
+        if (captureBtn) captureBtn.disabled = !ok;
+        if (timerBtn) timerBtn.disabled = !ok;
+      }
+    }, 500);
   }
 
   private startCountdown(root: ShadowRoot, seconds: number, setFile: (f: File) => void): void {
@@ -900,6 +1042,10 @@ class GhostLayerWidget {
       clearInterval(this.countdownTimer);
       this.countdownTimer = null;
     }
+    if (this.lightingInterval) {
+      clearInterval(this.lightingInterval);
+      this.lightingInterval = null;
+    }
     if (this.cameraStream) {
       this.cameraStream.getTracks().forEach((t) => t.stop());
       this.cameraStream = null;
@@ -927,6 +1073,7 @@ class GhostLayerWidget {
       formData.append('product_name', this.currentProduct?.name || '');
       formData.append('brand_id', this.brandId);
       formData.append('source', 'ghost-layer');
+      formData.append('provider', this.selectedProvider);
 
       const api = this.config?.apiEndpoint || DEFAULT_API;
       const res = await fetch(`${api}/api/widget/try-on`, { method: 'POST', body: formData });
