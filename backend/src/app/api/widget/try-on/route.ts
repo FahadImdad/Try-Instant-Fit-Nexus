@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Client } from '@gradio/client';
 import { generateContent, TRYON_MODEL, TRYON_PROMPT, TRYON_SYSTEM_INSTRUCTION, isolateGarment } from '@/lib/gemini';
 import { uploadTryOnResult } from '@/lib/storage';
 import { supabase } from '@/lib/supabase';
@@ -9,116 +8,6 @@ export const maxDuration = 90;
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
-
-// ── Fashn.ai integration ──────────────────────────────────────────────────────
-
-async function callFashn(
-  userPhotoBase64: string,
-  userMimeType: string,
-  productImageUrl: string
-): Promise<{ buffer: Buffer; mimeType: string; model: string }> {
-  const apiKey = process.env.FASHN_API_KEY;
-  if (!apiKey) throw new Error('FASHN_API_KEY not configured');
-
-  const userDataUri = `data:${userMimeType};base64,${userPhotoBase64}`;
-
-  // Start prediction
-  const startRes = await fetch('https://api.fashn.ai/v1/run', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'tryon',
-      input: {
-        model_image: userDataUri,
-        garment_image: productImageUrl,
-        category: 'tops',
-      },
-    }),
-  });
-
-  if (!startRes.ok) {
-    const text = await startRes.text();
-    throw new Error(`Fashn.ai ${startRes.status}: ${text}`);
-  }
-
-  const { id, error: startErr } = await startRes.json();
-  if (startErr) throw new Error(`Fashn.ai error: ${startErr}`);
-
-  // Poll until done (max ~50s: 25 × 2s)
-  for (let i = 0; i < 25; i++) {
-    await new Promise((r) => setTimeout(r, 2000));
-
-    const pollRes = await fetch(`https://api.fashn.ai/v1/status/${id}`, {
-      headers: { Authorization: `Bearer ${apiKey}` },
-    });
-    const status = await pollRes.json();
-
-    if (status.status === 'completed' && status.output?.[0]) {
-      const imgRes = await fetch(status.output[0]);
-      const mimeType = imgRes.headers.get('content-type')?.split(';')[0] ?? 'image/jpeg';
-      return {
-        buffer: Buffer.from(await imgRes.arrayBuffer()),
-        mimeType,
-        model: 'fashn-tryon',
-      };
-    }
-
-    if (status.status === 'failed') {
-      throw new Error(`Fashn.ai failed: ${status.error ?? 'unknown error'}`);
-    }
-  }
-
-  throw new Error('Fashn.ai timed out after 50s');
-}
-
-// ── Replicate IDM-VTON integration ────────────────────────────────────────────
-
-// ── HuggingFace IDM-VTON integration (free) ──────────────────────────────────
-
-async function callHuggingFace(
-  userPhotoBase64: string,
-  userMimeType: string,
-  productImageUrl: string
-): Promise<{ buffer: Buffer; mimeType: string; model: string }> {
-  const userPhotoBuffer = Buffer.from(userPhotoBase64, 'base64');
-  const userBlob = new Blob([userPhotoBuffer], { type: userMimeType });
-
-  const productRes = await fetch(productImageUrl, {
-    headers: { 'User-Agent': 'TryInstantFit/1.0' },
-  });
-  if (!productRes.ok) throw new Error('Could not fetch product image for HuggingFace');
-  const productBlob = await productRes.blob();
-
-  const client = await Client.connect('yisol/IDM-VTON');
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const result: any = await client.predict('/tryon', {
-    dict: { background: userBlob, layers: [], composite: null },
-    garm_img: productBlob,
-    garment_des: 'clothing item',
-    is_checked: true,
-    is_checked_crop: false,
-    denoise_steps: 30,
-    seed: 42,
-  });
-
-  // result.data[0] is the output image (FileData with .url)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const outputImg: any = result?.data?.[0];
-  const outputUrl: string = outputImg?.url ?? outputImg;
-  if (!outputUrl) throw new Error('HuggingFace IDM-VTON returned no image');
-
-  const imgRes = await fetch(outputUrl);
-  const mimeType = imgRes.headers.get('content-type')?.split(';')[0] ?? 'image/png';
-  return {
-    buffer: Buffer.from(await imgRes.arrayBuffer()),
-    mimeType,
-    model: 'idm-vton-hf',
-  };
-}
 
 // ── Gemini integration ────────────────────────────────────────────────────────
 
@@ -186,7 +75,6 @@ export async function POST(request: NextRequest) {
     const brandId = formData.get('brand_id') as string | null;
     const productId = formData.get('product_id') as string | null;
     const productName = formData.get('product_name') as string | null;
-    const provider = (formData.get('provider') as string | null) ?? 'gemini';
 
     // ── Validation ──────────────────────────────────────────────────────────
     if (!userPhotoFile) {
@@ -223,30 +111,9 @@ export async function POST(request: NextRequest) {
     const productMimeType = (productResponse.headers.get('content-type') ?? 'image/jpeg').split(';')[0];
     const productBase64 = productBuffer.toString('base64');
 
-    // ── Call selected AI provider ───────────────────────────────────────────
-    let resultBuffer: Buffer;
-    let resultMimeType: string;
-    let aiModel: string;
-
-    console.log(`[try-on] Using provider: ${provider}`);
-
-    if (provider === 'fashn') {
-      const res = await callFashn(userPhotoBase64, userPhotoFile.type, productImageUrl);
-      resultBuffer = res.buffer;
-      resultMimeType = res.mimeType;
-      aiModel = res.model;
-    } else if (provider === 'replicate') {
-      const res = await callHuggingFace(userPhotoBase64, userPhotoFile.type, productImageUrl);
-      resultBuffer = res.buffer;
-      resultMimeType = res.mimeType;
-      aiModel = res.model;
-    } else {
-      // default: gemini
-      const res = await callGemini(userPhotoBase64, userPhotoFile.type, productBase64, productMimeType);
-      resultBuffer = res.buffer;
-      resultMimeType = res.mimeType;
-      aiModel = res.model;
-    }
+    // ── Call Gemini ─────────────────────────────────────────────────────────
+    const { buffer: resultBuffer, mimeType: resultMimeType, model: aiModel } =
+      await callGemini(userPhotoBase64, userPhotoFile.type, productBase64, productMimeType);
 
     // ── Upload result to Google Cloud Storage ───────────────────────────────
     const resultUrl = await uploadTryOnResult(resultBuffer, brandId, resultMimeType);
@@ -273,7 +140,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       result_url: resultUrl,
       processing_time_ms: processingTimeMs,
-      provider,
     });
   } catch (error) {
     const processingTimeMs = Date.now() - startTime;
