@@ -530,7 +530,6 @@ function renderCard(p) {
         </svg>
       </button>
       ${p.sizes.length ? `<div class="card-sizes">${sizeHTML}</div>` : ''}
-      <button class="card-tryon" onclick="event.stopPropagation();glTryOn('${p.id}')">Try It On ✨</button>
     </div>
     <div class="card-fabric">${p.fabric}</div>
     <div class="card-name">${p.name}</div>
@@ -543,9 +542,6 @@ function renderCard(p) {
 
 function goProduct(id) { window.location.href = `product.html?id=${id}`; }
 
-function glTryOn(id) {
-  window.location.href = `product.html?id=${id}&tryon=1`;
-}
 
 function glAddToCart(id) {
   const p = ALL_PRODUCTS.find(x => x.id === id);
