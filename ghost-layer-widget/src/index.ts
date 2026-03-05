@@ -1166,8 +1166,7 @@ class GhostLayerWidget {
       formData.append('source', 'ghost-layer');
       formData.append('provider', 'gemini');
 
-      const api = this.config?.apiEndpoint || DEFAULT_API;
-      const res = await fetch(`${api}/api/widget/try-on`, { method: 'POST', body: formData });
+      const res = await fetch(`${DEFAULT_API}/api/widget/try-on`, { method: 'POST', body: formData });
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
@@ -1193,8 +1192,7 @@ class GhostLayerWidget {
 
   private async trackEvent(eventName: string, data: Record<string, unknown>): Promise<void> {
     try {
-      const api = this.config?.apiEndpoint || DEFAULT_API;
-      await fetch(`${api}/api/widget/track`, {
+      await fetch(`${DEFAULT_API}/api/widget/track`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
