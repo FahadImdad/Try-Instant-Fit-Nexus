@@ -48,6 +48,11 @@ class GhostLayerWidget {
       console.log('[GhostLayer] Initializing for brand:', this.brandId);
       await this.loadConfiguration();
 
+      // Always set brand color CSS variable so listing pages can use it
+      if (this.config?.buttonColor) {
+        document.documentElement.style.setProperty('--gl-brand-color', this.config.buttonColor);
+      }
+
       if (!this.config?.enabled) {
         console.log('[GhostLayer] Widget disabled');
         return;
