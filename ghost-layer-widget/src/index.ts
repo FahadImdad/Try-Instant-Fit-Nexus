@@ -36,6 +36,7 @@ class GhostLayerWidget {
   private lightingInterval: number | null = null;
   private lastBrightness = 128;
   private selectedProvider: 'primary' | 'fallback' = 'primary';
+  private selectedGeminiModel = 'gemini-3.1-flash-image-preview';
 
   constructor(brandId: string) {
     this.brandId = brandId;
@@ -606,6 +607,11 @@ class GhostLayerWidget {
             <button class="gl-model-btn gl-model-active" id="gl-model-primary" data-provider="primary">⭐ Google Try-On</button>
             <button class="gl-model-btn" id="gl-model-fallback" data-provider="fallback">🤖 Gemini</button>
           </div>
+          <div class="gl-model-toggle gl-gemini-sub" id="gl-gemini-sub" style="display:none">
+            <span class="gl-model-label">Version:</span>
+            <button class="gl-model-btn gl-model-active" id="gl-gemini-flash">⚡ Flash 3.1</button>
+            <button class="gl-model-btn" id="gl-gemini-pro">🌟 Pro 3</button>
+          </div>
 
           <button class="gl-primary-btn" id="gl-generate-btn" disabled>Generate Try-On</button>
           <div class="gl-result-actions">
@@ -821,6 +827,7 @@ class GhostLayerWidget {
 
       .gl-privacy { font-size: 11px; color: #9ca3af; text-align: center; margin-top: 8px; line-height: 1.4; }
       .gl-model-toggle { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+      .gl-gemini-sub { margin-top: -6px; padding-left: 8px; opacity: 0.9; }
       .gl-model-label { font-size: 11px; color: #6b7280; white-space: nowrap; }
       .gl-model-btn { flex: 1; padding: 6px 10px; border: 1.5px solid #e5e7eb; border-radius: 8px; background: #f9fafb; color: #6b7280; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
       .gl-model-btn:hover { border-color: #6366f1; color: #6366f1; }
@@ -978,11 +985,25 @@ class GhostLayerWidget {
         this.selectedProvider = 'primary';
         root.getElementById('gl-model-primary')?.classList.add('gl-model-active');
         root.getElementById('gl-model-fallback')?.classList.remove('gl-model-active');
+        const sub = root.getElementById('gl-gemini-sub');
+        if (sub) sub.style.display = 'none';
       });
       root.getElementById('gl-model-fallback')?.addEventListener('click', () => {
         this.selectedProvider = 'fallback';
         root.getElementById('gl-model-fallback')?.classList.add('gl-model-active');
         root.getElementById('gl-model-primary')?.classList.remove('gl-model-active');
+        const sub = root.getElementById('gl-gemini-sub');
+        if (sub) sub.style.display = 'flex';
+      });
+      root.getElementById('gl-gemini-flash')?.addEventListener('click', () => {
+        this.selectedGeminiModel = 'gemini-3.1-flash-image-preview';
+        root.getElementById('gl-gemini-flash')?.classList.add('gl-model-active');
+        root.getElementById('gl-gemini-pro')?.classList.remove('gl-model-active');
+      });
+      root.getElementById('gl-gemini-pro')?.addEventListener('click', () => {
+        this.selectedGeminiModel = 'gemini-3-pro-image-preview';
+        root.getElementById('gl-gemini-pro')?.classList.add('gl-model-active');
+        root.getElementById('gl-gemini-flash')?.classList.remove('gl-model-active');
       });
 
       root.getElementById('gl-buy-btn-upload')?.addEventListener('click', () => {
@@ -1251,6 +1272,9 @@ class GhostLayerWidget {
       formData.append('brand_id', this.brandId);
       formData.append('source', 'ghost-layer');
       formData.append('provider', this.selectedProvider);
+      if (this.selectedProvider === 'fallback') {
+        formData.append('gemini_model', this.selectedGeminiModel);
+      }
 
       const res = await fetch(`${DEFAULT_API}/api/widget/try-on`, { method: 'POST', body: formData });
 
