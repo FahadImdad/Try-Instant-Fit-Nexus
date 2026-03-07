@@ -203,12 +203,22 @@ class GhostLayerWidget {
     const link = card.querySelector<HTMLAnchorElement>('a[href]');
     const url = link?.href || location.href;
 
-    // Try to extract real product ID from URL query params (e.g. ?id=rtw-001)
+    // Try to extract real product ID: data attributes first, then URL query params
     let productId = Math.random().toString(36).substr(2, 12);
-    try {
-      const urlParams = new URLSearchParams(new URL(url, location.href).search);
-      productId = urlParams.get('id') || urlParams.get('product_id') || urlParams.get('productId') || productId;
-    } catch (_e) {}
+    const dataId =
+      card.dataset.id ||
+      card.dataset.productId ||
+      card.getAttribute('data-product-id') ||
+      card.closest('[data-id]')?.getAttribute('data-id') ||
+      card.closest('[data-product-id]')?.getAttribute('data-product-id');
+    if (dataId) {
+      productId = dataId;
+    } else {
+      try {
+        const urlParams = new URLSearchParams(new URL(url, location.href).search);
+        productId = urlParams.get('id') || urlParams.get('product_id') || urlParams.get('productId') || productId;
+      } catch (_e) {}
+    }
 
     const product: Product = {
       id: productId,
