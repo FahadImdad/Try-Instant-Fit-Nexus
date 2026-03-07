@@ -36,7 +36,7 @@ class GhostLayerWidget {
   private lightingInterval: number | null = null;
   private lastBrightness = 128;
   private selectedProvider: 'primary' | 'fallback' = 'primary';
-  private selectedGeminiModel = 'gemini-3.1-flash-image-preview';
+  private selectedGeminiModel = 'gemini-3.1-pro-image-preview';
 
   constructor(brandId: string) {
     this.brandId = brandId;
@@ -602,15 +602,26 @@ class GhostLayerWidget {
             </div>
           </div>
 
-          <div class="gl-model-toggle">
+          <div class="gl-model-section">
             <span class="gl-model-label">AI Model:</span>
-            <button class="gl-model-btn gl-model-active" id="gl-model-primary" data-provider="primary">⭐ Google Try-On</button>
-            <button class="gl-model-btn" id="gl-model-fallback" data-provider="fallback">🤖 Gemini</button>
-          </div>
-          <div class="gl-model-toggle gl-gemini-sub" id="gl-gemini-sub" style="display:none">
-            <span class="gl-model-label">Version:</span>
-            <button class="gl-model-btn gl-model-active" id="gl-gemini-flash">⚡ Flash 3.1</button>
-            <button class="gl-model-btn" id="gl-gemini-pro">🌟 Pro 3</button>
+            <div class="gl-model-grid">
+              <button class="gl-model-card gl-model-active" data-provider="primary" data-model="">
+                <div class="gl-mc-name">⭐ Google Try-On</div>
+                <div class="gl-mc-meta"><span class="gl-q gl-q-spec">Specialized</span><span class="gl-mc-cost">$0.04</span></div>
+              </button>
+              <button class="gl-model-card" data-provider="fallback" data-model="gemini-3.1-flash-image-preview">
+                <div class="gl-mc-name">⚡ Flash 3.1</div>
+                <div class="gl-mc-meta"><span class="gl-q gl-q-good">Good</span><span class="gl-mc-cost">$0.09</span></div>
+              </button>
+              <button class="gl-model-card" data-provider="fallback" data-model="gemini-3.1-pro-image-preview">
+                <div class="gl-mc-name">🌟 Pro 3.1</div>
+                <div class="gl-mc-meta"><span class="gl-q gl-q-best">Best</span><span class="gl-mc-cost">$0.27</span></div>
+              </button>
+              <button class="gl-model-card" data-provider="fallback" data-model="gemini-3-pro-image-preview">
+                <div class="gl-mc-name">⚠️ Pro 3</div>
+                <div class="gl-mc-meta"><span class="gl-q gl-q-dep">Expires 3/9</span><span class="gl-mc-cost">$0.27</span></div>
+              </button>
+            </div>
           </div>
 
           <button class="gl-primary-btn" id="gl-generate-btn" disabled>Generate Try-On</button>
@@ -826,12 +837,21 @@ class GhostLayerWidget {
       .gl-ghost-btn:hover { border-color: #d1d5db; }
 
       .gl-privacy { font-size: 11px; color: #9ca3af; text-align: center; margin-top: 8px; line-height: 1.4; }
-      .gl-model-toggle { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
-      .gl-gemini-sub { margin-top: -6px; padding-left: 8px; opacity: 0.9; }
-      .gl-model-label { font-size: 11px; color: #6b7280; white-space: nowrap; }
-      .gl-model-btn { flex: 1; padding: 6px 10px; border: 1.5px solid #e5e7eb; border-radius: 8px; background: #f9fafb; color: #6b7280; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
-      .gl-model-btn:hover { border-color: #6366f1; color: #6366f1; }
-      .gl-model-active { border-color: #6366f1 !important; background: #f5f3ff !important; color: #6366f1 !important; }
+      .gl-model-section { margin-bottom: 10px; }
+      .gl-model-label { font-size: 11px; color: #6b7280; display: block; margin-bottom: 6px; }
+      .gl-model-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+      .gl-model-card { padding: 6px 4px; border: 1.5px solid #e5e7eb; border-radius: 8px; background: #f9fafb; cursor: pointer; transition: all 0.15s; text-align: center; }
+      .gl-model-card:hover { border-color: #6366f1; }
+      .gl-model-card.gl-model-active { border-color: #6366f1 !important; background: #f5f3ff !important; }
+      .gl-mc-name { font-size: 10px; font-weight: 700; color: #374151; line-height: 1.2; margin-bottom: 3px; }
+      .gl-mc-meta { display: flex; align-items: center; justify-content: center; gap: 3px; }
+      .gl-mc-cost { font-size: 9px; color: #6b7280; }
+      .gl-q { font-size: 8px; font-weight: 700; padding: 1px 4px; border-radius: 4px; }
+      .gl-q-spec { background: #dbeafe; color: #1d4ed8; }
+      .gl-q-good { background: #dcfce7; color: #15803d; }
+      .gl-q-better { background: #fef9c3; color: #a16207; }
+      .gl-q-best { background: #fae8ff; color: #a21caf; }
+      .gl-q-dep { background: #fee2e2; color: #b91c1c; }
 
       /* Processing */
       .gl-spinner {
@@ -981,29 +1001,15 @@ class GhostLayerWidget {
 
       // ── Cart / Wishlist (upload step) ──
       // ── Model toggle ──
-      root.getElementById('gl-model-primary')?.addEventListener('click', () => {
-        this.selectedProvider = 'primary';
-        root.getElementById('gl-model-primary')?.classList.add('gl-model-active');
-        root.getElementById('gl-model-fallback')?.classList.remove('gl-model-active');
-        const sub = root.getElementById('gl-gemini-sub');
-        if (sub) sub.style.display = 'none';
-      });
-      root.getElementById('gl-model-fallback')?.addEventListener('click', () => {
-        this.selectedProvider = 'fallback';
-        root.getElementById('gl-model-fallback')?.classList.add('gl-model-active');
-        root.getElementById('gl-model-primary')?.classList.remove('gl-model-active');
-        const sub = root.getElementById('gl-gemini-sub');
-        if (sub) sub.style.display = 'flex';
-      });
-      root.getElementById('gl-gemini-flash')?.addEventListener('click', () => {
-        this.selectedGeminiModel = 'gemini-3.1-flash-image-preview';
-        root.getElementById('gl-gemini-flash')?.classList.add('gl-model-active');
-        root.getElementById('gl-gemini-pro')?.classList.remove('gl-model-active');
-      });
-      root.getElementById('gl-gemini-pro')?.addEventListener('click', () => {
-        this.selectedGeminiModel = 'gemini-3-pro-image-preview';
-        root.getElementById('gl-gemini-pro')?.classList.add('gl-model-active');
-        root.getElementById('gl-gemini-flash')?.classList.remove('gl-model-active');
+      root.querySelectorAll('.gl-model-card').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          root.querySelectorAll('.gl-model-card').forEach((b) => b.classList.remove('gl-model-active'));
+          btn.classList.add('gl-model-active');
+          const provider = (btn as HTMLElement).dataset.provider as 'primary' | 'fallback';
+          const model = (btn as HTMLElement).dataset.model ?? '';
+          this.selectedProvider = provider;
+          this.selectedGeminiModel = model;
+        });
       });
 
       root.getElementById('gl-buy-btn-upload')?.addEventListener('click', () => {
