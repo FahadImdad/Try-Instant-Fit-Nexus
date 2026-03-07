@@ -365,6 +365,9 @@ class GhostLayerWidget {
   }
 
   private genId(): string {
+    const params = new URLSearchParams(location.search);
+    const urlId = params.get('id') || params.get('product_id') || params.get('productId');
+    if (urlId) return urlId;
     return btoa(location.pathname).replace(/[^a-zA-Z0-9]/g, '').substring(0, 16);
   }
 
