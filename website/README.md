@@ -6,7 +6,7 @@ A complete, professional, multi-page website for your virtual try-on business.
 
 ### Pages
 1. **Homepage** (`index.html`) - Hero, features, stats, products overview
-2. **Products** (`products.html`) - Detailed pages for all 3 products (Ghost Layer, Scan & Wear, Digital Mirror)
+2. **Product** (`products.html`) - Scan & Wear in-store QR-code virtual try-on
 3. **Pricing** (`pricing.html`) - Transparent pricing with ROI calculator
 4. **How It Works** (`how-it-works.html`) - Technical details and process flows
 5. **Demo/Contact** (`demo.html`) - Booking form and contact information

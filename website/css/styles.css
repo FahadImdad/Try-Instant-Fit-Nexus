@@ -130,32 +130,35 @@ p:last-child{margin-bottom:0}
 .hero-trust span{font-size:.78rem;color:rgba(255,255,255,.45);display:flex;align-items:center;gap:5px;font-weight:500}
 .hero-trust span::before{content:'✓';color:var(--cyan);font-weight:800}
 
-/* ── Hero Visual (browser mockup) ── */
+/* ── Hero Visual (phone mockup) ── */
 .hero-visual{position:relative}
-.browser-mockup{background:#1a2240;border-radius:var(--r-xl);overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.06);animation:float 5s ease-in-out infinite}
-.browser-bar{background:#111827;padding:.7rem 1rem;display:flex;align-items:center;gap:.75rem}
-.browser-dots{display:flex;gap:5px}
-.browser-dots span{width:10px;height:10px;border-radius:50%;display:block}
-.browser-dots span:nth-child(1){background:#ff5f57}
-.browser-dots span:nth-child(2){background:#febc2e}
-.browser-dots span:nth-child(3){background:#28c840}
-.browser-url-bar{flex:1;background:#1f2937;border-radius:5px;padding:.3rem .75rem;font-size:.72rem;color:#6b7280;font-family:monospace;letter-spacing:-.01em}
-.browser-body{padding:1.5rem;background:#0f1629}
-.tryon-ui{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.phone-mockup{position:relative;max-width:320px;margin:0 auto;animation:float 5s ease-in-out infinite}
+.phone-frame{background:linear-gradient(160deg,#1a2030,#0a0d18);border-radius:48px;padding:10px;box-shadow:0 0 0 2px #2a3045,inset 0 0 0 1px rgba(255,255,255,.03),0 36px 90px rgba(0,0,0,.6),0 0 80px rgba(90,103,242,.18)}
+.phone-screen{background:#0f1629;border-radius:38px;overflow:hidden;position:relative;padding-top:42px;padding-bottom:18px}
+.phone-notch{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:96px;height:28px;background:#000;border-radius:16px;z-index:5}
+.phone-statusbar{position:absolute;top:14px;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:0 22px;font-size:.72rem;color:#fff;font-weight:600;z-index:6}
+.phone-time{font-feature-settings:"tnum"}
+.phone-icons{display:flex;gap:5px;align-items:center}
+.phone-app-header{display:flex;align-items:center;justify-content:space-between;padding:.6rem 1rem .75rem;border-bottom:1px solid rgba(255,255,255,.06)}
+.phone-app-title{font-size:.95rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.01em}
+.phone-app-close{width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.08);color:rgba(255,255,255,.55);display:flex;align-items:center;justify-content:center;font-size:1rem;line-height:1}
+.phone-screen-body{padding:.85rem}
+.phone-home-indicator{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);width:110px;height:4px;border-radius:2px;background:rgba(255,255,255,.45)}
+.tryon-ui{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
 .tryon-panel{border-radius:var(--r-md);overflow:hidden;position:relative}
-.tryon-label{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.6);color:#fff;font-size:.65rem;font-weight:700;padding:3px 8px;border-radius:4px;letter-spacing:.04em;text-transform:uppercase}
-.tryon-img{width:100%;aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;font-size:3.5rem;position:relative}
+.tryon-label{position:absolute;top:7px;left:7px;background:rgba(0,0,0,.6);color:#fff;font-size:.55rem;font-weight:700;padding:2px 6px;border-radius:4px;letter-spacing:.04em;text-transform:uppercase;z-index:2}
+.tryon-pic{width:100%;aspect-ratio:3/4;display:block}
 .tryon-before{background:linear-gradient(160deg,#1e2d4a,#162238)}
 .tryon-after{background:linear-gradient(160deg,#1a3a2a,#0d2218)}
-.tryon-result-badge{position:absolute;bottom:8px;right:8px;background:var(--green);color:#fff;font-size:.65rem;font-weight:700;padding:3px 8px;border-radius:4px}
-.tryon-actions{grid-column:1/-1;display:flex;gap:.5rem;margin-top:.25rem}
-.tryon-btn{flex:1;padding:.55rem;border-radius:var(--r-sm);border:none;font-size:.75rem;font-weight:700;cursor:pointer;font-family:inherit}
+.tryon-result-badge{position:absolute;bottom:7px;right:7px;background:var(--green);color:#fff;font-size:.55rem;font-weight:700;padding:2px 6px;border-radius:4px;z-index:2}
+.tryon-actions{grid-column:1/-1;display:flex;gap:.4rem;margin-top:.25rem}
+.tryon-btn{flex:1;padding:.5rem;border-radius:var(--r-sm);border:none;font-size:.7rem;font-weight:700;cursor:pointer;font-family:inherit}
 .tryon-btn-primary{background:var(--grad);color:#fff}
 .tryon-btn-secondary{background:#1f2937;color:#9ca3af}
-.tryon-stat-row{display:flex;gap:.5rem;margin-top:.75rem}
-.tryon-stat{flex:1;background:#1f2937;border-radius:var(--r-sm);padding:.6rem .75rem;text-align:center}
-.tryon-stat-num{font-size:1.1rem;font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
-.tryon-stat-lbl{font-size:.6rem;color:#6b7280;margin:2px 0 0;font-weight:500}
+.tryon-stat-row{display:flex;gap:.4rem;margin-top:.6rem}
+.tryon-stat{flex:1;background:#1f2937;border-radius:var(--r-sm);padding:.5rem .6rem;text-align:center}
+.tryon-stat-num{font-size:1rem;font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.tryon-stat-lbl{font-size:.55rem;color:#6b7280;margin:2px 0 0;font-weight:500}
 
 /* Floating badges on hero visual */
 .hero-badge{position:absolute;background:#fff;border-radius:var(--r-lg);padding:.6rem 1rem;display:flex;align-items:center;gap:.6rem;box-shadow:var(--sh3);font-size:.8rem;font-weight:700;color:var(--text);white-space:nowrap;z-index:10}

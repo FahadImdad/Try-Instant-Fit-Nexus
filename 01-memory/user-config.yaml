@@ -8,10 +8,10 @@ user_preferences:
   system:
     python_cmd: '[TODO: Replace with ''python'' or ''python3'' depending on system]'
 onboarding:
-  status: not_started
-  in_progress_skill: null
+  status: in_progress
+  in_progress_skill: quick-start
   language_preference: null
-  path_chosen: null
+  path_chosen: quick_start
   quick_start_state:
     step_completed: 0
     intention_captured: false
@@ -29,7 +29,7 @@ onboarding:
     workspace_created: false
     first_build_created: false
     hi_menu_taught: false
-  started_at: null
+  started_at: '2026-05-04T03:34:17.673080'
   completed_at: null
 first_encounters:
   build_created: false

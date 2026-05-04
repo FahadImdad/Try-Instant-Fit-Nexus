@@ -235,7 +235,7 @@
             </div>
             <ul class="nav-menu" id="navMenu">
                 <li><a href="index.html" class="nav-link">Home</a></li>
-                <li><a href="products.html" class="nav-link">Products</a></li>
+                <li><a href="products.html" class="nav-link">Product</a></li>
                 <li><a href="how-it-works.html" class="nav-link">How It Works</a></li>
                 <li><a href="pricing.html" class="nav-link">Pricing</a></li>
                 <li><a href="register.html" class="nav-link nav-register active">Register</a></li>
@@ -367,70 +367,22 @@
                         </div>
                     </div>
 
-                    <!-- ── STEP 2: Choose Product ── -->
+                    <!-- ── STEP 2: Confirm Product ── -->
                     <div class="step-panel" id="step2">
-                        <h2 style="margin-bottom: 0.5rem;">Which product do you need?</h2>
-                        <p style="color: var(--text-light); margin-bottom: 2rem;">You can register for multiple products. Select all that apply.</p>
+                        <h2 style="margin-bottom: 0.5rem;">Your product: Scan &amp; Wear</h2>
+                        <p style="color: var(--text-light); margin-bottom: 2rem;">QR codes on every garment tag — customers scan with their phone and see the fit instantly.</p>
 
-                        <div class="product-select-grid">
-                            <div class="product-select-card" data-product="ghost-layer" onclick="toggleProduct(this)">
-                                <div class="check">✓</div>
-                                <div class="icon">🌐</div>
-                                <h4>Ghost Layer</h4>
-                                <p>Website widget — virtual try-on embedded into your e-commerce site</p>
-                                <div class="price-hint">From $2,000 + $0.80/try-on</div>
-                            </div>
-                            <div class="product-select-card" data-product="scan-wear" onclick="toggleProduct(this)">
-                                <div class="check">✓</div>
-                                <div class="icon">📱</div>
-                                <h4>Scan & Wear</h4>
-                                <p>QR codes in physical stores — customers scan and try-on instantly</p>
-                                <div class="price-hint">From $1,000 + $0.50/try-on</div>
-                            </div>
-                            <div class="product-select-card" data-product="digital-mirror" onclick="toggleProduct(this)">
-                                <div class="check">✓</div>
-                                <div class="icon">🪞</div>
-                                <h4>Digital Mirror</h4>
-                                <p>Smart mirror hardware for premium boutiques and flagship stores</p>
-                                <div class="price-hint">From $10,000 hardware</div>
-                            </div>
-                        </div>
-
-                        <div id="productError" style="color: #ef4444; font-size: 0.9rem; margin-bottom: 1rem; display: none;">
-                            Please select at least one product to continue.
-                        </div>
-
-                        <!-- Ghost Layer detail (shown when selected) -->
-                        <div id="detail-ghost-layer" class="card" style="background: var(--background-light); display: none; margin-bottom: 1rem;">
-                            <h4>🌐 Ghost Layer — What to expect</h4>
-                            <ul style="margin-left: 1.5rem; margin-top: 0.75rem; color: var(--text-light); line-height: 2;">
-                                <li>5-minute install via Google Tag Manager</li>
-                                <li>Works on any e-commerce platform (Shopify, WooCommerce, custom)</li>
-                                <li>Dashboard to upload garments and view analytics</li>
-                                <li>Social sharing with your brand watermark</li>
-                            </ul>
-                        </div>
-
-                        <!-- Scan & Wear detail -->
-                        <div id="detail-scan-wear" class="card" style="background: var(--background-light); display: none; margin-bottom: 1rem;">
-                            <h4>📱 Scan & Wear — What to expect</h4>
+                        <div class="card" style="background: var(--background-light); margin-bottom: 1rem;">
+                            <h4>📱 Scan &amp; Wear — What to expect</h4>
                             <ul style="margin-left: 1.5rem; margin-top: 0.75rem; color: var(--text-light); line-height: 2;">
                                 <li>QR codes printed on garment tags or store displays</li>
                                 <li>Customers scan with any smartphone camera</li>
                                 <li>No app download required</li>
                                 <li>In-store analytics dashboard included</li>
                             </ul>
-                        </div>
-
-                        <!-- Digital Mirror detail -->
-                        <div id="detail-digital-mirror" class="card" style="background: var(--background-light); display: none; margin-bottom: 1rem;">
-                            <h4>🪞 Digital Mirror — What to expect</h4>
-                            <ul style="margin-left: 1.5rem; margin-top: 0.75rem; color: var(--text-light); line-height: 2;">
-                                <li>Human-height touchscreen display (55" – 75")</li>
-                                <li>Professional installation by our team</li>
-                                <li>Cloud-connected dashboard for real-time analytics</li>
-                                <li>Hardware warranty + ongoing support included</li>
-                            </ul>
+                            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); font-size: 0.9rem; color: var(--text-light);">
+                                <strong style="color: var(--secondary-color);">From $1,000</strong> setup + <strong style="color: var(--secondary-color);">$0.50</strong>/try-on
+                            </div>
                         </div>
 
                         <div class="step-nav">
@@ -489,7 +441,7 @@
 
                         <div class="card" style="background: var(--background-light);">
                             <p style="font-size: 0.875rem; color: var(--text-light); margin: 0;">
-                                💡 <strong>Note:</strong> All plans require a one-time setup fee (Ghost Layer: $2,000–$3,000 · Scan & Wear: $1,000–$2,000 · Digital Mirror: $10,000–$30,000 hardware + $2,000–$5,000 setup). Final pricing is confirmed after your onboarding call.
+                                💡 <strong>Note:</strong> All plans require a one-time Scan &amp; Wear setup fee ($1,000–$2,000). Final pricing is confirmed after your onboarding call.
                             </p>
                         </div>
 
@@ -592,20 +544,19 @@
                     <p style="color: rgba(255, 255, 255, 0.8);">AI-powered virtual try-on technology for modern fashion retailers.</p>
                 </div>
                 <div>
-                    <h4>Products</h4>
+                    <h4>Product</h4>
                     <ul class="footer-links">
-                        <li><a href="products.html#ghost-layer">Ghost Layer Widget</a></li>
-                        <li><a href="products.html#scan-wear">Scan & Wear QR</a></li>
-                        <li><a href="products.html#digital-mirror">Digital Mirror</a></li>
+                        <li><a href="products.html#scan-wear">Scan &amp; Wear QR</a></li>
+                        <li><a href="how-it-works.html">How It Works</a></li>
+                        <li><a href="pricing.html">Pricing</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4>Company</h4>
                     <ul class="footer-links">
-                        <li><a href="how-it-works.html">How It Works</a></li>
-                        <li><a href="pricing.html">Pricing</a></li>
                         <li><a href="register.html">Register</a></li>
                         <li><a href="demo.html">Book Demo</a></li>
+                        <li><a href="dashboard.html">Dashboard</a></li>
                     </ul>
                 </div>
                 <div>
@@ -628,7 +579,7 @@
         // ── State ──
         const state = {
             step: 1,
-            products: [],
+            products: ['scan-wear'],
             plan: null,
             business: {}
         };
@@ -687,11 +638,6 @@
         }
 
         function validateStep2() {
-            if (state.products.length === 0) {
-                document.getElementById('productError').style.display = 'block';
-                return false;
-            }
-            document.getElementById('productError').style.display = 'none';
             return true;
         }
 
@@ -704,22 +650,6 @@
             return true;
         }
 
-        // ── Product selection ──
-        function toggleProduct(card) {
-            const product = card.dataset.product;
-            card.classList.toggle('selected');
-            const detail = document.getElementById('detail-' + product);
-
-            if (card.classList.contains('selected')) {
-                state.products.push(product);
-                if (detail) detail.style.display = 'block';
-            } else {
-                state.products = state.products.filter(p => p !== product);
-                if (detail) detail.style.display = 'none';
-            }
-            document.getElementById('productError').style.display = 'none';
-        }
-
         // ── Plan selection ──
         function selectPlan(card) {
             document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
@@ -730,9 +660,7 @@
 
         // ── Build summary ──
         const productNames = {
-            'ghost-layer': '🌐 Ghost Layer (Website Widget)',
-            'scan-wear': '📱 Scan & Wear (QR Codes)',
-            'digital-mirror': '🪞 Digital Mirror (Hardware)'
+            'scan-wear': '📱 Scan & Wear (QR Codes)'
         };
         const planNames = {
             starter: 'Starter — up to 1,000 try-ons/mo @ $0.80/try-on',
