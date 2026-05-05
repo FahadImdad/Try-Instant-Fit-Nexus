@@ -228,7 +228,7 @@
             <li>Works on any smartphone camera</li>
             <li>In-store analytics dashboard</li>
           </ul>
-          <div class="prod-price"><strong>From $1,000</strong> setup + <strong>$0.50</strong>/try-on</div>
+          <div class="prod-price"><strong data-usd="1000">From $1,000</strong> setup + <strong data-usd="0.50">$0.50</strong>/try-on</div>
           <a href="register.html" class="btn btn-primary" style="margin-top:1.25rem;width:100%;">Get Started →</a>
           <a href="products.html#scan-wear" class="btn btn-secondary" style="margin-top:.5rem;width:100%;">Learn More</a>
         </div>
@@ -484,8 +484,8 @@
         <div class="pricing-badge">Scan &amp; Wear</div>
         <div style="font-size:2rem;margin-bottom:.75rem;">📱</div>
         <h4>In-Store QR Try-On</h4>
-        <div style="font-size:2rem;font-weight:900;letter-spacing:-.04em;margin:.5rem 0;" class="text-grad">$1,000<span style="font-size:1rem;font-weight:400;color:var(--muted);background:none;-webkit-text-fill-color:var(--muted);"> setup</span></div>
-        <p style="font-size:.9rem;">+ $0.50 per try-on</p>
+        <div data-usd="1000" style="font-size:2rem;font-weight:900;letter-spacing:-.04em;margin:.5rem 0;" class="text-grad">$1,000<span style="font-size:1rem;font-weight:400;color:var(--muted);background:none;-webkit-text-fill-color:var(--muted);"> setup</span></div>
+        <p style="font-size:.9rem;">+ <span data-usd="0.50">$0.50</span> per try-on</p>
       </div>
     </div>
 
@@ -633,6 +633,7 @@
 </footer>
 
 <script src="js/script.js"></script>
+<script src="js/fx-display.js" defer></script>
 <script>
   // Navbar scroll state
   window.addEventListener('scroll', () => {

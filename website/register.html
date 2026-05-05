@@ -381,7 +381,7 @@
                                 <li>In-store analytics dashboard included</li>
                             </ul>
                             <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); font-size: 0.9rem; color: var(--text-light);">
-                                <strong style="color: var(--secondary-color);">From $1,000</strong> setup + <strong style="color: var(--secondary-color);">$0.50</strong>/try-on
+                                <strong data-usd="1000" style="color: var(--secondary-color);">From $1,000</strong> setup + <strong data-usd="0.50" style="color: var(--secondary-color);">$0.50</strong>/try-on
                             </div>
                         </div>
 
@@ -400,7 +400,7 @@
                             <div class="plan-card" data-plan="starter" onclick="selectPlan(this)">
                                 <div class="check">✓</div>
                                 <div style="font-size: 0.75rem; color: var(--text-light); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Starter</div>
-                                <div class="plan-price">$0.80<span>/try-on</span></div>
+                                <div class="plan-price" data-usd="0.80">$0.80<span>/try-on</span></div>
                                 <div class="plan-per">Up to 1,000/month</div>
                                 <ul class="plan-features">
                                     <li>1 product integration</li>
@@ -412,7 +412,7 @@
                             <div class="plan-card" data-plan="growth" onclick="selectPlan(this)">
                                 <div class="check">✓</div>
                                 <div class="plan-badge">Most Popular</div>
-                                <div class="plan-price">$0.65<span>/try-on</span></div>
+                                <div class="plan-price" data-usd="0.65">$0.65<span>/try-on</span></div>
                                 <div class="plan-per">1,000 – 10,000/month</div>
                                 <ul class="plan-features">
                                     <li>Unlimited integrations</li>
@@ -424,7 +424,7 @@
                             <div class="plan-card" data-plan="enterprise" onclick="selectPlan(this)">
                                 <div class="check">✓</div>
                                 <div style="font-size: 0.75rem; color: var(--text-light); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Enterprise</div>
-                                <div class="plan-price">$0.45<span>/try-on</span></div>
+                                <div class="plan-price" data-usd="0.45">$0.45<span>/try-on</span></div>
                                 <div class="plan-per">10,000+/month</div>
                                 <ul class="plan-features">
                                     <li>Dedicated account manager</li>
@@ -575,6 +575,7 @@
     </footer>
 
     <script src="js/script.js"></script>
+    <script src="js/fx-display.js" defer></script>
     <script>
         // ── State ──
         const state = {
