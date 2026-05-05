@@ -1,11 +1,10 @@
 import { GoogleAuth } from 'google-auth-library';
 import sharp from 'sharp';
 
-// ── Model names ────────────────────────────────────────────────────────────────
-export const TRYON_MODEL_PRIMARY  = 'virtual-try-on-001';           // Vertex AI — GA, stable, $0.04/try-on
-export const TRYON_MODEL_FALLBACK = 'gemini-3.1-pro-image-preview';   // Gemini — best quality, ~$0.27/try-on
+// ── Model ──────────────────────────────────────────────────────────────────────
+export const TRYON_MODEL = 'gemini-3.1-flash-image-preview';
+export const TRYON_MAX_DIM = 512;
 
-const LOCATION = process.env.VERTEX_LOCATION ?? 'us-central1';
 const MAX_RETRIES = 3;
 
 // ── Auth ───────────────────────────────────────────────────────────────────────
@@ -24,17 +23,15 @@ async function getAccessToken(scope: string): Promise<string> {
 }
 
 // ── Image preprocessing ────────────────────────────────────────────────────────
-// Normalizes any input photo to JPEG, max 1024px on longest side, good quality.
-// This ensures the API always gets a clean, consistent input regardless of what
-// the user uploaded (huge PNG, tiny JPEG, portrait, landscape, etc.)
+// Normalizes input photos to JPEG at 512px on longest side.
 
-export async function preprocessImage(base64: string, mimeType: string, maxDim = 1024): Promise<{ base64: string; mimeType: string }> {
+export async function preprocessImage(base64: string, mimeType: string): Promise<{ base64: string; mimeType: string }> {
   const inputBuffer = Buffer.from(base64, 'base64');
 
   const outputBuffer = await sharp(inputBuffer)
-    .rotate()                          // auto-rotate based on EXIF orientation
-    .resize(maxDim, maxDim, {
-      fit: 'inside',                   // scale down only, never upscale
+    .rotate()
+    .resize(TRYON_MAX_DIM, TRYON_MAX_DIM, {
+      fit: 'inside',
       withoutEnlargement: true,
     })
     .jpeg({ quality: 92 })
@@ -43,120 +40,45 @@ export async function preprocessImage(base64: string, mimeType: string, maxDim =
   return { base64: outputBuffer.toString('base64'), mimeType: 'image/jpeg' };
 }
 
-// ── PRIMARY: Google Virtual Try-On API (GA, stable, 1 call) ───────────────────
-
-async function callVirtualTryOnOnce(
-  personBase64: string,
-  garmentBase64: string,
-  token: string,
-  projectId: string
-): Promise<{ data: string; mimeType: string }> {
-  const url = `https://${LOCATION}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${LOCATION}/publishers/google/models/${TRYON_MODEL_PRIMARY}:predict`;
-
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      instances: [
-        {
-          personImage:   { image: { bytesBase64Encoded: personBase64 } },
-          productImages: [{ image: { bytesBase64Encoded: garmentBase64 } }],
-        },
-      ],
-      parameters: {
-        sampleCount: 1,
-        baseSteps: 50,              // increased from 32 → better quality/consistency
-        addWatermark: false,
-        personGeneration: 'allow_adult',
-        outputOptions: { mimeType: 'image/jpeg', compressionQuality: 92 },
-      },
-    }),
-  });
-
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Virtual Try-On API ${response.status}: ${text}`);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const result: any = await response.json();
-  const prediction = result.predictions?.[0];
-
-  if (!prediction?.bytesBase64Encoded) {
-    throw new Error('Virtual Try-On API returned no image');
-  }
-
-  return { data: prediction.bytesBase64Encoded, mimeType: prediction.mimeType ?? 'image/jpeg' };
-}
-
-export async function virtualTryOn(
-  personBase64: string,
-  garmentBase64: string
-): Promise<{ data: string; mimeType: string; model: string }> {
-  const projectId = process.env.GOOGLE_CLOUD_PROJECT_ID;
-  if (!projectId) throw new Error('GOOGLE_CLOUD_PROJECT_ID is required');
-
-  // Preprocess both images before sending
-  const [person, garment] = await Promise.all([
-    preprocessImage(personBase64, 'image/jpeg'),
-    preprocessImage(garmentBase64, 'image/jpeg'),
-  ]);
-
-  const token = await getAccessToken('https://www.googleapis.com/auth/cloud-platform');
-
-  let lastError: Error | null = null;
-
-  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-    try {
-      console.log(`[try-on] Virtual Try-On attempt ${attempt}/${MAX_RETRIES}...`);
-      const result = await callVirtualTryOnOnce(person.base64, garment.base64, token, projectId);
-      console.log(`[try-on] Success on attempt ${attempt}`);
-      return { ...result, model: TRYON_MODEL_PRIMARY };
-    } catch (err) {
-      lastError = err instanceof Error ? err : new Error(String(err));
-      console.warn(`[try-on] Attempt ${attempt} failed: ${lastError.message}`);
-      if (attempt < MAX_RETRIES) {
-        // short wait before retry
-        await new Promise(r => setTimeout(r, 1000 * attempt));
-      }
-    }
-  }
-
-  throw lastError ?? new Error('Virtual Try-On API failed after retries');
-}
-
-// ── FALLBACK: Gemini image generation (2 calls) ────────────────────────────────
+// ── Gemini call ────────────────────────────────────────────────────────────────
 
 const GEMINI_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function callGemini(requestBody: object, model = TRYON_MODEL_FALLBACK): Promise<any> {
+async function callGemini(requestBody: object): Promise<any> {
   const token = await getAccessToken('https://www.googleapis.com/auth/generative-language');
 
-  const response = await fetch(`${GEMINI_BASE_URL}/${model}:generateContent`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(requestBody),
-  });
+  let lastError: Error | null = null;
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const response = await fetch(`${GEMINI_BASE_URL}/${TRYON_MODEL}:generateContent`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
 
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Gemini API ${response.status}: ${text}`);
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Gemini API ${response.status}: ${text}`);
+      }
+      return await response.json();
+    } catch (err) {
+      lastError = err instanceof Error ? err : new Error(String(err));
+      console.warn(`[try-on] Gemini attempt ${attempt}/${MAX_RETRIES} failed: ${lastError.message}`);
+      if (attempt < MAX_RETRIES) {
+        await new Promise(r => setTimeout(r, 1000 * attempt));
+      }
+    }
   }
-
-  return response.json();
+  throw lastError ?? new Error('Gemini API failed after retries');
 }
 
 async function isolateGarment(
   productBase64: string,
   productMimeType: string,
-  model = TRYON_MODEL_FALLBACK
 ): Promise<{ data: string; mimeType: string }> {
   const result = await callGemini({
     contents: [
@@ -179,7 +101,7 @@ Output: just the garment on a white background with its exact original color and
       },
     ],
     generationConfig: { responseModalities: ['IMAGE', 'TEXT'] },
-  }, model);
+  });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const parts: any[] = result.candidates?.[0]?.content?.parts ?? [];
@@ -191,40 +113,32 @@ Output: just the garment on a white background with its exact original color and
   return { data: imagePart.inlineData.data, mimeType: imagePart.inlineData.mimeType };
 }
 
-export async function geminiTryOn(
+export async function tryOn(
   userPhotoBase64: string,
   userMimeType: string,
   productBase64: string,
   productMimeType: string,
   cachedGarment?: { data: string; mimeType: string },
-  model = TRYON_MODEL_FALLBACK,
-  maxDim = 1024
 ): Promise<{ data: string; mimeType: string; model: string; isolatedGarment?: { data: string; mimeType: string } }> {
-  // Preprocess user photo to target resolution before sending to Gemini
   const [userPhoto, productImg] = await Promise.all([
-    preprocessImage(userPhotoBase64, userMimeType, maxDim),
-    preprocessImage(productBase64, productMimeType, maxDim),
+    preprocessImage(userPhotoBase64, userMimeType),
+    preprocessImage(productBase64, productMimeType),
   ]);
-  userPhotoBase64 = userPhoto.base64;
-  userMimeType = userPhoto.mimeType;
-  productBase64 = productImg.base64;
-  productMimeType = productImg.mimeType;
 
   let garment: { data: string; mimeType: string };
   let freshlyIsolated = false;
 
   if (cachedGarment) {
-    console.log('[try-on] Fallback: Using cached isolated garment, skipping Step 1.');
+    console.log('[try-on] Using cached isolated garment, skipping Step 1.');
     garment = cachedGarment;
   } else {
-    console.log('[try-on] Fallback Step 1: Isolating garment...');
-    garment = await isolateGarment(productBase64, productMimeType, model);
+    console.log('[try-on] Step 1: Isolating garment...');
+    garment = await isolateGarment(productImg.base64, productImg.mimeType);
     freshlyIsolated = true;
   }
 
-  console.log('[try-on] Fallback Step 2: Applying garment to person...');
+  console.log('[try-on] Step 2: Applying garment to person...');
 
-  // Step 2: Apply isolated garment to customer photo
   const result = await callGemini({
     systemInstruction: {
       parts: [{ text: `You are a photo editing AI that performs clothing swaps. You receive a customer photo and an isolated garment image (garment on white background, no person). Your job is to place the garment onto the customer exactly as they appear — preserving their face, body, pose, and background completely. You only change the clothing.` }],
@@ -237,13 +151,13 @@ export async function geminiTryOn(
           { text: 'IMAGE 1 — ISOLATED GARMENT:' },
           { inlineData: { data: garment.data, mimeType: garment.mimeType } },
           { text: 'IMAGE 2 — CUSTOMER PHOTO:' },
-          { inlineData: { data: userPhotoBase64, mimeType: userMimeType } },
+          { inlineData: { data: userPhoto.base64, mimeType: userPhoto.mimeType } },
           { text: 'Now output IMAGE 2 with only the clothing replaced by the garment from IMAGE 1. Face, pose, body, and background unchanged.' },
         ],
       },
     ],
     generationConfig: { responseModalities: ['IMAGE', 'TEXT'] },
-  }, model);
+  });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const parts: any[] = result.candidates?.[0]?.content?.parts ?? [];
@@ -260,7 +174,7 @@ export async function geminiTryOn(
   return {
     data: imagePart.inlineData.data,
     mimeType: imagePart.inlineData.mimeType ?? 'image/jpeg',
-    model,
+    model: TRYON_MODEL,
     isolatedGarment: freshlyIsolated ? garment : undefined,
   };
 }

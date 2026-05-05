@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { virtualTryOn, geminiTryOn, TRYON_MODEL_PRIMARY, TRYON_MODEL_FALLBACK } from '@/lib/gemini';
+import { tryOn, TRYON_MODEL } from '@/lib/gemini';
 import { uploadTryOnResult, uploadIsolatedGarment } from '@/lib/storage';
 import { supabase } from '@/lib/supabase';
 
-// 90s timeout — Virtual Try-On API can take up to ~60s
 export const maxDuration = 90;
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+// Flash 3.1 @ 512px — cached garment = 1 call, fresh = 2 calls
+const COST_PER_CALL = 0.045;
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -20,12 +22,7 @@ export async function POST(request: NextRequest) {
     const brandId         = formData.get('brand_id')          as string | null;
     const productId       = formData.get('product_id')        as string | null;
     const productName     = formData.get('product_name')      as string | null;
-    const provider           = formData.get('provider')           as string | null;
-    const geminiModel        = formData.get('gemini_model')       as string | null;
-    const outputResolution   = formData.get('output_resolution')  as string | null;
-    const maxDim = outputResolution ? parseInt(outputResolution, 10) : 1024;
 
-    // ── Validation ──────────────────────────────────────────────────────────
     if (!userPhotoFile)   return NextResponse.json({ error: 'user_photo is required' },        { status: 400 });
     if (!productImageUrl) return NextResponse.json({ error: 'product_image_url is required' }, { status: 400 });
     if (!brandId)         return NextResponse.json({ error: 'brand_id is required' },          { status: 400 });
@@ -36,11 +33,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Photo must be under 10MB' }, { status: 400 });
     }
 
-    // ── Convert user photo to base64 ────────────────────────────────────────
     const userPhotoBuffer = Buffer.from(await userPhotoFile.arrayBuffer());
     const userPhotoBase64 = userPhotoBuffer.toString('base64');
 
-    // ── Fetch and convert product image ────────────────────────────────────
     const productResponse = await fetch(productImageUrl, {
       headers: { 'User-Agent': 'TryInstantFit/1.0' },
     });
@@ -49,74 +44,54 @@ export async function POST(request: NextRequest) {
     }
     const productBuffer = Buffer.from(await productResponse.arrayBuffer());
     const productBase64 = productBuffer.toString('base64');
+    const productMimeType = (productResponse.headers.get('content-type') ?? 'image/jpeg').split(';')[0];
 
-    // ── Call AI model based on provider ────────────────────────────────────
-    const useFallback = provider === 'fallback';
-    console.log(`[try-on] Using provider: ${useFallback ? 'fallback (Gemini)' : 'primary (Virtual Try-On)'}`);
-
-    let resultBase64: string;
-    let resultMimeType: string;
-    let isolatedGarmentResult: { data: string; mimeType: string } | undefined;
+    // ── Check for cached isolated garment ──────────────────────────────────────
+    let cachedGarment: { data: string; mimeType: string } | undefined;
     let usedGarmentCache = false;
-    let usedGeminiModel: string | undefined;
+    if (productId) {
+      const { data: cacheRow } = await supabase
+        .from('product_garments')
+        .select('isolated_garment_url, mime_type')
+        .eq('product_id', productId)
+        .eq('brand_id', brandId)
+        .single();
 
-    if (useFallback) {
-      const productMimeType = (productResponse.headers.get('content-type') ?? 'image/jpeg').split(';')[0];
-
-      // ── Check for cached isolated garment ──────────────────────────────
-      let cachedGarment: { data: string; mimeType: string } | undefined;
-      if (productId) {
-        const { data: cacheRow } = await supabase
-          .from('product_garments')
-          .select('isolated_garment_url, mime_type')
-          .eq('product_id', productId)
-          .eq('brand_id', brandId)
-          .single();
-
-        if (cacheRow?.isolated_garment_url) {
-          try {
-            const resp = await fetch(cacheRow.isolated_garment_url);
-            if (resp.ok) {
-              const buf = Buffer.from(await resp.arrayBuffer());
-              cachedGarment = { data: buf.toString('base64'), mimeType: cacheRow.mime_type ?? 'image/jpeg' };
-              usedGarmentCache = true;
-              console.log('[try-on] Cache hit: using cached isolated garment for product:', productId);
-            }
-          } catch { /* ignore — will re-isolate */ }
-        }
+      if (cacheRow?.isolated_garment_url) {
+        try {
+          const resp = await fetch(cacheRow.isolated_garment_url);
+          if (resp.ok) {
+            const buf = Buffer.from(await resp.arrayBuffer());
+            cachedGarment = { data: buf.toString('base64'), mimeType: cacheRow.mime_type ?? 'image/jpeg' };
+            usedGarmentCache = true;
+            console.log('[try-on] Cache hit: using cached isolated garment for product:', productId);
+          }
+        } catch { /* ignore — will re-isolate */ }
       }
-
-      const geminiResult = await geminiTryOn(userPhotoBase64, userPhotoFile.type, productBase64, productMimeType, cachedGarment, geminiModel ?? undefined, maxDim);
-      resultBase64 = geminiResult.data;
-      resultMimeType = geminiResult.mimeType;
-      isolatedGarmentResult = geminiResult.isolatedGarment;
-      usedGeminiModel = geminiResult.model;
-    } else {
-      const vtResult = await virtualTryOn(userPhotoBase64, productBase64);
-      resultBase64 = vtResult.data;
-      resultMimeType = vtResult.mimeType;
     }
 
-    const aiModel = useFallback ? (usedGeminiModel ?? TRYON_MODEL_FALLBACK) : TRYON_MODEL_PRIMARY;
+    const result = await tryOn(userPhotoBase64, userPhotoFile.type, productBase64, productMimeType, cachedGarment);
+    const resultBase64 = result.data;
+    const resultMimeType = result.mimeType;
+    const isolatedGarmentResult = result.isolatedGarment;
+
     console.log('[try-on] Done.');
 
-    // ── Upload result to Google Cloud Storage ───────────────────────────────
     const resultBuffer = Buffer.from(resultBase64, 'base64');
     const resultUrl = await uploadTryOnResult(resultBuffer, brandId, resultMimeType);
 
     const processingTimeMs = Date.now() - startTime;
 
-    // ── Cache isolated garment (fire-and-forget) ────────────────────────────
     if (isolatedGarmentResult && productId) {
       (async () => {
         try {
-          const garmentBuffer = Buffer.from(isolatedGarmentResult!.data, 'base64');
-          const garmentUrl = await uploadIsolatedGarment(garmentBuffer, productId, isolatedGarmentResult!.mimeType);
+          const garmentBuffer = Buffer.from(isolatedGarmentResult.data, 'base64');
+          const garmentUrl = await uploadIsolatedGarment(garmentBuffer, productId, isolatedGarmentResult.mimeType);
           await supabase.from('product_garments').upsert({
-            product_id:             productId,
-            brand_id:               brandId,
-            isolated_garment_url:   garmentUrl,
-            mime_type:              isolatedGarmentResult!.mimeType,
+            product_id:           productId,
+            brand_id:             brandId,
+            isolated_garment_url: garmentUrl,
+            mime_type:            isolatedGarmentResult.mimeType,
           }, { onConflict: 'product_id,brand_id' });
           console.log('[try-on] Cached isolated garment for product:', productId);
         } catch (err) {
@@ -125,7 +100,6 @@ export async function POST(request: NextRequest) {
       })();
     }
 
-    // ── Save to Supabase (fire-and-forget) ──────────────────────────────────
     supabase
       .from('tryons')
       .insert({
@@ -133,21 +107,9 @@ export async function POST(request: NextRequest) {
         product_id:         productId,
         product_name:       productName,
         result_image_url:   resultUrl,
-        ai_model:           aiModel,
+        ai_model:           TRYON_MODEL,
         processing_time_ms: processingTimeMs,
-        cost_usd:           useFallback
-          ? (() => {
-              const m = usedGeminiModel ?? '';
-              const r = maxDim; // 512 | 1024 | 2048 | 4096
-              // Cost per output image by model & resolution (from Google pricing)
-              const perImg = m.includes('pro')
-                ? (r <= 512 ? 0.134 : r <= 1024 ? 0.134 : r <= 2048 ? 0.134 : 0.24)  // Pro: flat $0.134 up to 2K, $0.24 at 4K
-                : m.includes('2.5-flash')
-                  ? (r <= 512 ? 0.022 : r <= 1024 ? 0.034 : r <= 2048 ? 0.050 : 0.076) // Flash 2.5
-                  : (r <= 512 ? 0.045 : r <= 1024 ? 0.067 : r <= 2048 ? 0.101 : 0.151); // Flash 3.1
-              return usedGarmentCache ? perImg : perImg * 2; // cached=1 call, fresh=2 calls
-            })()
-          : 0.04,                                                                         // Virtual Try-On: $0.04 flat
+        cost_usd:           usedGarmentCache ? COST_PER_CALL : COST_PER_CALL * 2,
         source:             'ghost-layer',
       })
       .then(({ error }) => {
@@ -157,7 +119,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       result_url:         resultUrl,
       processing_time_ms: processingTimeMs,
-      model:              aiModel,
+      model:              TRYON_MODEL,
     });
 
   } catch (error) {
