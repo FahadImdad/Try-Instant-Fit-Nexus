@@ -53,14 +53,6 @@ CREATE TABLE IF NOT EXISTS analytics_events (
   created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- ── FX Rates (USD-based, refreshed daily by cron) ────────────────────────────
-CREATE TABLE IF NOT EXISTS fx_rates (
-  currency    TEXT PRIMARY KEY,
-  rate        NUMERIC(12, 4) NOT NULL,
-  source      TEXT NOT NULL DEFAULT 'open.er-api.com',
-  fetched_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
 -- ── Indexes ──────────────────────────────────────────────────────────────────
 CREATE INDEX IF NOT EXISTS idx_tryons_brand_id ON tryons(brand_id);
 CREATE INDEX IF NOT EXISTS idx_tryons_created_at ON tryons(created_at DESC);

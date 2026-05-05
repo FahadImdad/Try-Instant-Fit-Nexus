@@ -6,11 +6,5 @@
     "src/app/api/widget/try-on/route.ts": {
       "maxDuration": 60
     }
-  },
-  "crons": [
-    {
-      "path": "/api/cron/refresh-fx",
-      "schedule": "0 6 * * *"
-    }
-  ]
+  }
 }
