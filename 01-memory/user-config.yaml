@@ -29,14 +29,14 @@ onboarding:
     workspace_created: false
     first_build_created: false
     hi_menu_taught: false
-  started_at: '2026-05-04T03:34:17.673080'
+  started_at: '2026-05-05T23:36:36.305994'
   completed_at: null
 first_encounters:
   build_created: false
   skill_loaded: false
   workspace_used: false
-  memory_updated: false
-  close_session_used: false
+  memory_updated: true
+  close_session_used: true
 anti_patterns_warned:
   repeated_build_pattern: false
 learning_tracker:
