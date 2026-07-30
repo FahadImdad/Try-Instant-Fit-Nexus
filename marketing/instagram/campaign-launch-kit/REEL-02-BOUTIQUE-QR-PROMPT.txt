@@ -1,0 +1,44 @@
+Create a polished 12-second vertical 9:16 Instagram Reel for Try Instant Fit using:
+
+- generated-assets/boutique-qr-scene.png
+- real-phone-flow/flow-1.jpg through flow-11.jpg
+- brand/logo.png
+
+TARGET:
+Fashion boutiques, clothing shops, bridal studios, designers, and retail outlets in
+Pakistan and globally.
+
+EDIT:
+0.0–3.5 seconds:
+Animate boutique-qr-scene.png with subtle natural movement. The shopper gently raises
+the phone toward the QR card while the boutique owner makes a small welcoming gesture.
+Use a slow 4 percent camera push-in. Keep the boutique, garments, QR card, hands, and
+phone realistic. Keep both faces strongly blurred without any momentary sharpening.
+Text: “Give every outfit a try-on link.”
+
+3.5–8.5 seconds:
+Show real phone frames flow-1 through flow-11 in exact numeric order with clean quick
+cross-fades, subtle push-ins, and light tap sounds.
+Text: “Scan. Add a photo. See the look.”
+
+8.5–12.0 seconds:
+Use a clean navy-to-indigo brand background and the supplied Try Instant Fit logo.
+Text: “Built for fashion sellers.”
+CTA: “DM ‘DEMO’”
+Small line: “No app needed.”
+
+STYLE:
+Premium, trustworthy, modern, approachable fashion technology. Ivory, navy, indigo,
+cyan, sage, dusty rose, and muted gold. Elegant energetic instrumental music. No
+voice-over. Quick but understandable pacing.
+
+PRIVACY:
+Every face must remain strongly blurred in every frame, including the boutique scene,
+phone screens, results, thumbnails, mirrors, and reflections. Never reconstruct or
+reveal facial features.
+
+DO NOT:
+Do not redraw phone UI. Do not alter the logo. Do not invent statistics, testimonials,
+retailer partnerships, customer data, prices, or extra interface text. No third-party
+logos, revealing clothing, neon colors, loud prints, distorted hands, or watermarks.
+

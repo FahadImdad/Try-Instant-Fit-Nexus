@@ -1,0 +1,51 @@
+Create one polished 14-second vertical 9:16 Instagram Reel for Try Instant Fit using
+the two generated transformation clips, the supplied real phone-flow images in numeric
+order, and the supplied Try Instant Fit logo.
+
+TARGET AUDIENCE:
+Fashion vendors: boutiques, clothing brands, bridal studios, designers, suit stores,
+retail outlets, and online fashion shops in Pakistan and globally.
+
+EDIT:
+0.0–1.5 seconds:
+Begin with the first part of the everyday-to-formal transformation.
+Large clean text: “Customers unsure about the outfit?”
+
+1.5–4.0 seconds:
+Complete the formal outfit transformation.
+Text: “Let them try it instantly.”
+
+4.0–7.5 seconds:
+Show the everyday-to-wedding transformation.
+Text: “Everyday to wedding wear.”
+
+7.5–11.5 seconds:
+Animate flow-1.jpg through flow-11.jpg in exact numeric order using fast clean
+cross-fades and subtle push-ins. Keep the phone UI sharp and readable.
+Text: “One photo. See the look.”
+
+11.5–14.0 seconds:
+Clean navy-to-indigo background with the supplied Try Instant Fit logo.
+Text: “Own a fashion brand?”
+Final CTA: “DM ‘DEMO’”
+Small supporting line: “No app needed.”
+
+STYLE:
+Premium fashion technology, modern, trustworthy, elegant, clean, fast but easy to
+understand. Use navy, indigo, cyan, ivory, and muted gold. Use restrained transitions,
+not flashy effects. Add modern elegant instrumental music, a soft tap sound on the phone
+flow, and a subtle fabric-sweep sound on each try-on transformation. No voice-over is
+required.
+
+PRIVACY:
+Every face must remain strongly blurred for every frame, including source models,
+generated transformations, phone screens, results, thumbnails, mirrors, reflections,
+and the cover. Never reconstruct or reveal a face. Reject or regenerate any shot where
+the blur weakens for even one frame.
+
+DO NOT:
+Do not recreate phone screens with AI. Do not change the supplied logo. Do not invent
+statistics, testimonials, customer names, retailer partnerships, product claims, or
+extra interface text. Do not add revealing clothing, crop tops, deep necklines, neon
+colors, loud prints, celebrity likenesses, watermarks, or third-party logos.
+

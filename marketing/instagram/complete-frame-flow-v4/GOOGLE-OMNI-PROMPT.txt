@@ -1,0 +1,62 @@
+Create one premium, photorealistic 9:16 Instagram Reel for Try Instant Fit using the 12 supplied numbered frames in their exact numerical order.
+
+OUTPUT
+- 1080 x 1920 vertical
+- 14 seconds
+- 30 fps
+- Premium fashion-tech commercial
+- Realistic, restrained, elegant, trustworthy
+
+NON-NEGOTIABLE PRESERVATION RULES
+- Treat every supplied frame as a locked keyframe.
+- Preserve the exact people, body shapes, garments, colors, embroidery, phone screens, UI, text, spelling, logo, and composition.
+- Keep every face obscured exactly as supplied for the entire video.
+- Never reveal, sharpen, reconstruct, replace, animate, or invent a face.
+- Do not generate new people, fingers, garments, interfaces, buttons, logos, words, scenery, or product details.
+- Do not make the result look synthetic, glossy, surreal, or like AI art.
+
+TIMELINE
+00.00-01.10 — 01-hook.png
+Slow 2% camera push. Keep the model and blurred face completely stable.
+
+01.10-02.20 — 02-formal-result.png
+Clean match cut. Very subtle fabric-light movement only; preserve the dress exactly.
+
+02.20-03.05 — 03-open-link.png
+Fast confident cut. Add only a tiny camera push toward the real screen.
+
+03.05-03.90 — 04-see-product.png
+Straight cut. No UI changes.
+
+03.90-04.75 — 05-add-photo.png
+Straight cut. Preserve the obscured face and phone screen.
+
+04.75-05.60 — 06-photo-ready.png
+Straight cut. No invented tapping hand or UI motion.
+
+05.60-06.45 — 07-tap-try-on.png
+Subtle 2% push toward the Try It On action. Do not alter the screen.
+
+06.45-07.45 — 08-processing.png
+Subtle push only. Do not create a new loading graphic.
+
+07.45-08.65 — 09-result.png
+Clean reveal cut. Hold long enough to understand the result. Both the main face and the smaller face inside the phone must remain obscured.
+
+08.65-10.10 — 10-wedding-before.png
+Elegant soft dissolve. Tiny parallax between model and background only if it does not deform the body or clothing.
+
+10.10-11.80 — 11-wedding-result.png
+Premium reveal. A restrained light sweep across the embroidery is allowed; do not change its pattern, construction, color, fit, or modesty.
+
+11.80-14.00 — 12-cta.png
+Hold the end card steadily. Add a subtle cyan glow pulse behind the CTA, but preserve every word and the logo exactly.
+
+EDITING AND SOUND
+- Use crisp cuts through the product flow and elegant dissolves only for the fashion reveals.
+- Add a modern premium fashion-tech beat: soft bass pulse, clean clicks on product steps, one refined shimmer on each reveal.
+- No voiceover.
+- Keep all text readable and inside the safe area.
+- No glitch effects, morphing, spinning phones, floating UI, particles, fake camera shake, or dramatic AI transformations.
+
+The result should feel like a real high-end campaign filmed and designed by a fashion technology brand, with authentic product proof and strict privacy.

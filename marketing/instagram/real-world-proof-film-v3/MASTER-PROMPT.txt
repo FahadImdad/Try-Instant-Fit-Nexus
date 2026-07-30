@@ -1,0 +1,51 @@
+Assemble a believable 14-second vertical 9:16 Instagram Reel for Try Instant Fit using
+the two generated before/after clips, the supplied authentic phone frames, optional
+real phone footage, and the authentic logo.
+
+The final film must feel like a real product demonstration made by a credible fashion
+technology company. It must not look like an AI concept video.
+
+0.0–2.0 seconds:
+Use real footage of a hand choosing a garment. If unavailable, begin directly with the
+formal before frame.
+Text: “Will it look right on me?”
+
+2.0–5.5 seconds:
+Use the formal before/after clip.
+Text: “See before you buy.”
+
+5.5–8.5 seconds:
+Show authentic product frames in this order:
+flow-1, flow-5, flow-7, flow-8, flow-9.
+Use simple hard cuts or 4-frame dissolves. Keep UI unchanged.
+Text: “Open. Add a photo. Try it on.”
+
+8.5–11.5 seconds:
+Use the wedding before/after clip.
+Text: “Everyday to wedding wear.”
+
+11.5–14.0 seconds:
+Show flow-10 and flow-11, then cut to the authentic logo on a plain navy background.
+Text: “For fashion sellers.”
+CTA: “DM ‘DEMO’”
+
+EDITING:
+Use normal human-paced edits. No portal transitions, particle effects, floating
+interfaces, fake reflections, 3D phones, excessive zooms, speed ramps, camera orbits,
+AI-generated backgrounds, or synthetic people. Use neutral color correction and retain
+natural texture. Do not over-smooth skin or fabric.
+
+AUDIO:
+Use a restrained modern rhythm at low volume, real phone tap sounds, and subtle boutique
+room tone. No cinematic trailer bass, magical whooshes, robotic sounds, or exaggerated
+effects. The Reel must also work completely without sound.
+
+PRIVACY:
+Keep every face strongly blurred for every frame, including models, phone screens,
+results, thumbnails, mirrors, reflections, and the cover. Never reconstruct or reveal a
+face.
+
+TRUTH:
+Do not invent statistics, testimonials, customers, partner brands, prices, or features.
+Do not redraw the phone UI or alter the logo.
+

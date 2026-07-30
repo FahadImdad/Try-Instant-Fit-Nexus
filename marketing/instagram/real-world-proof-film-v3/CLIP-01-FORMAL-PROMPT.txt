@@ -1,0 +1,22 @@
+Create a 4-second vertical 9:16 video using 01-before-standing.png as the exact start
+frame and 02-after-formal.jpg as the exact end frame.
+
+This must look like a genuine virtual try-on demonstration recorded for a real product,
+not an AI-generated fashion advertisement.
+
+Lock the camera. Preserve the adult model's body proportions, standing pose, hands,
+hair, skin tone, white background, framing, and facial blur. Transition from the plain
+ivory outfit to the supplied muted mauve formal Pakistani outfit using a simple,
+realistic 8-frame cross-dissolve with a very subtle top-to-bottom mask reveal. Keep
+fabric detail natural. Add only minimal breathing and a nearly imperceptible 2 percent
+camera push-in.
+
+Keep ordinary soft studio lighting. Do not add glow, particles, shimmer, magical light,
+holograms, floating fabric, cinematic architecture, dramatic shadows, or camera moves.
+
+PRIVACY: keep the face strongly blurred for every frame. Never reconstruct, sharpen,
+enhance, or reveal it.
+
+Do not redesign the garment, change body shape, change pose, invent details, add text,
+add logos, distort hands, or add a watermark.
+

@@ -1,0 +1,22 @@
+Create a 5-second vertical 9:16 premium virtual try-on transformation using
+02-before-ivory.png as the exact start frame and 03-after-wedding-white.jpg as the exact
+end frame.
+
+Lock the camera and preserve the same adult model's pose, body proportions, hands, hair,
+skin tone, framing, and white studio background. Create a controlled couture
+transformation: a thin line of soft cyan and muted-gold light scans from shoulder to
+floor, replacing the plain ivory outfit with the supplied pastel pink and sage wedding
+lehenga. Reveal the real garment progressively—sleeves, embroidered bodice, skirt,
+dupatta, then train—with accurate realistic textiles and no body morphing. Add a very
+subtle camera push-in and restrained fabric motion at the final frame.
+
+Sound: elegant fabric sweep, tiny embroidery shimmer, soft resolved impact at the final
+look. No dialogue.
+
+PRIVACY: the face must remain strongly blurred at least as much as both supplied frames
+for the entire clip. Never reconstruct, sharpen, enhance, or reveal it.
+
+Do not redesign the garment, change colors, expose additional skin, reshape the body,
+move the hands, rotate the camera, add text, add logos, create explosive particles,
+distort fingers, flicker, or add a watermark.
+

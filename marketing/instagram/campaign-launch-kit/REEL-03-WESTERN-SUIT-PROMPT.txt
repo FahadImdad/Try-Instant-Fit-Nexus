@@ -1,0 +1,53 @@
+Create a polished 12-second vertical 9:16 Instagram Reel for Try Instant Fit using:
+
+- generated-assets/western-suit-start.png as the exact start frame
+- generated-assets/western-suit-end.png as the exact end frame
+- selected authentic images from real-phone-flow
+- brand/logo.png
+
+TARGET:
+Western fashion brands, workwear retailers, suit stores, department stores, online
+fashion shops, and global fashion vendors.
+
+EDIT:
+0.0–1.5 seconds:
+Hold on western-suit-start.png with a subtle 3 percent push-in.
+Text: “Unsure about the look?”
+
+1.5–5.5 seconds:
+Create a smooth virtual try-on transformation from western-suit-start.png to
+western-suit-end.png. Preserve the exact same adult model, body, centered pose, hands,
+hair, shoes, camera angle, studio background, lighting, crop, and strong facial blur.
+Change only the clothing from the plain ivory blouse and charcoal trousers into the
+supplied navy tailored suit and ivory high-neck blouse. Use a restrained soft light
+sweep from top to bottom. Show realistic tailoring, lapels, seams, wool texture, and
+fabric drape. No body morphing or camera rotation.
+Text: “Try it before checkout.”
+
+5.5–9.5 seconds:
+Show selected real product frames in this order:
+flow-1, flow-4, flow-5, flow-7, flow-8, flow-9, flow-10, flow-11.
+Use clean fast cross-fades and subtle tap sounds.
+Text: “One photo. See the outfit.”
+
+9.5–12.0 seconds:
+Navy-to-indigo background with the supplied Try Instant Fit logo.
+Text: “Own a fashion brand?”
+CTA: “DM ‘DEMO’”
+
+STYLE:
+Premium global fashion campaign, understated professional tailoring, clean studio
+photography, modern fashion technology, restrained animation, elegant energetic
+instrumental music. No voice-over.
+
+PRIVACY:
+The face must remain strongly blurred in every frame. Never reconstruct, sharpen,
+enhance, or reveal facial features. Apply the same rule to phone screens, results,
+thumbnails, reflections, and the cover.
+
+DO NOT:
+Do not change body proportions, pose, hands, hair, shoes, background, or camera angle.
+Do not redraw phone UI. Do not alter the logo. No invented statistics, testimonials,
+brand partnerships, prices, customer data, third-party logos, revealing clothing,
+neon colors, loud prints, distorted hands, flicker, or watermarks.
+

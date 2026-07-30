@@ -1,0 +1,24 @@
+Create a 4-second premium vertical 9:16 fashion-technology video using the supplied
+START-P1-base.png as the exact opening frame and END-Y1-formal.jpg as the exact visual
+destination.
+
+The same adult model stands in the same position against the same clean white studio
+background. Preserve her body proportions, pose, hands, hair, skin tone, camera angle,
+lighting, and framing. Create a smooth, elegant virtual try-on transformation from the
+simple ivory outfit into the supplied muted mauve formal Pakistani outfit. The new
+garment should materialize naturally from top to bottom with a restrained soft light
+sweep, showing realistic fabric drape, embroidery, sleeves, trousers, and dupatta.
+
+The transformation represents an AI virtual try-on, not a magical body transformation.
+Keep the model completely stationary except for subtle natural breathing and a very
+small fabric movement. No camera rotation. Use a slow 3 percent push-in.
+
+PRIVACY IS MANDATORY: preserve the strong facial blur from the source image throughout
+every frame. Never reconstruct, sharpen, enhance, or reveal the face. The blur must
+track the head perfectly and remain at least as strong as in the supplied images.
+
+No text, captions, logos, speech, dialogue, extra people, additional garments, exposed
+midriff, altered neckline, body reshaping, distorted hands, flicker, garment morphing
+artifacts, busy background, neon color, or invented brand marks. Clean premium studio
+advertisement, realistic textiles, polished but understated.
+
