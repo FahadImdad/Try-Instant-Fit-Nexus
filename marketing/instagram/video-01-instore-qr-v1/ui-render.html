@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:360px;height:790px;overflow:hidden;font-family:Inter,Arial,sans-serif;background:#071432;color:#101828}
+.screen{width:360px;height:790px;background:#071432;padding:62px 18px 20px}
+.brand{height:62px;display:flex;align-items:center;justify-content:center;gap:10px;color:#fff;font-size:21px;font-weight:700;letter-spacing:-.4px}
+.brand img{width:38px;height:38px;border-radius:9px}.brand b{color:#10c8ef}
+.card{background:#fff;border-radius:25px;padding:18px;box-shadow:0 2px 0 rgba(255,255,255,.25);min-height:510px}
+.product{display:grid;grid-template-columns:76px 1fr;gap:14px;align-items:center}.product img{width:76px;height:88px;object-fit:contain;background:#f7f7f5;border-radius:12px}.name{font-size:18px;line-height:1.15;font-weight:750}
+.tries{text-align:center;margin:14px 0 20px;font-size:11px;letter-spacing:.6px;font-weight:800;color:#475467}
+h2{font-size:21px;margin:8px 0 8px;text-align:center}p.help{text-align:center;font-size:13px;line-height:1.4;color:#475467;margin:0 8px 22px}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:14px}.choice{padding:16px 6px;border:1px solid #e4e7ec;border-radius:14px;text-align:center}.ico{font-size:32px}.choice strong{display:block;margin-top:8px;font-size:15px}.choice span{font-size:11px;color:#667085}
+.photo-title{font-size:15px;font-weight:750;margin:0 0 10px}.photo{width:100%;height:322px;object-fit:cover;object-position:center top;border-radius:14px;border:1px solid #d0d5dd;background:#f2f4f7}
+.button{margin-top:14px;height:46px;background:linear-gradient(90deg,#315cf4,#12c8ef);color:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px}
+.processing{height:490px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center}.spinner{width:78px;height:78px;border:8px solid rgba(255,255,255,.22);border-top-color:#14c8ef;border-radius:50%;margin-bottom:30px}.processing h2{font-size:22px}.processing p{font-size:13px;color:#c7d4ea;margin:0}
+</style>
+</head>
+<body><div id="app"></div>
+<script>
+const q=new URLSearchParams(location.search),state=q.get('state')||'upload';
+const base='.';
+const product=base+'/sage-product.png',before=base+'/customer-before.png',result=base+'/front-facing-try-on-result.png',icon='../assets/live-site/website-icon.png';
+const brand=`<div class="brand"><img src="${icon}"><span>Try Instant<b>Fit</b></span></div>`;
+const top=`<div class="product"><img src="${product}"><div class="name">Sage Embroidered<br>Formal Suit</div></div><div class="tries">2 TRIES LEFT ON YOUR CODE</div>`;
+let body='';
+if(state==='upload') body=`<div class="card">${top}<h2>Add Your Photo</h2><p class="help">Stand against a plain background, show your full body, and face forward for best results.</p><div class="choices"><div class="choice"><div class="ico">📷</div><strong>Take Photo</strong><span>Use camera</span></div><div class="choice"><div class="ico">🖼️</div><strong>Upload</strong><span>From gallery</span></div></div></div>`;
+if(state==='ready') body=`<div class="card">${top}<div class="photo-title">Your Photo</div><img class="photo" src="${before}"><div class="button">Try It On</div></div>`;
+if(state==='result') body=`<div class="card">${top}<div class="photo-title">Your Result</div><img class="photo" src="${result}"></div>`;
+if(state==='processing') body=`<div class="processing"><div class="spinner"></div><h2>Generating your try-on…</h2><p>This usually takes 5–15 seconds.</p></div>`;
+document.getElementById('app').innerHTML=`<div class="screen">${brand}${body}</div>`;
+</script></body></html>

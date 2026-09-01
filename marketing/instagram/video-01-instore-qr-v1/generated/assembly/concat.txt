@@ -1,0 +1,8 @@
+file 'C:/Users/Administrator/Desktop/Claude Code X Cursor Projects/Try-Instant-Fit-Nexus/marketing/instagram/video-01-instore-qr-v1/generated/assembly/00.mp4'
+file 'C:/Users/Administrator/Desktop/Claude Code X Cursor Projects/Try-Instant-Fit-Nexus/marketing/instagram/video-01-instore-qr-v1/generated/assembly/01.mp4'
+file 'C:/Users/Administrator/Desktop/Claude Code X Cursor Projects/Try-Instant-Fit-Nexus/marketing/instagram/video-01-instore-qr-v1/generated/assembly/02.mp4'
+file 'C:/Users/Administrator/Desktop/Claude Code X Cursor Projects/Try-Instant-Fit-Nexus/marketing/instagram/video-01-instore-qr-v1/generated/assembly/03.mp4'
+file 'C:/Users/Administrator/Desktop/Claude Code X Cursor Projects/Try-Instant-Fit-Nexus/marketing/instagram/video-01-instore-qr-v1/generated/assembly/04.mp4'
+file 'C:/Users/Administrator/Desktop/Claude Code X Cursor Projects/Try-Instant-Fit-Nexus/marketing/instagram/video-01-instore-qr-v1/generated/assembly/05.mp4'
+file 'C:/Users/Administrator/Desktop/Claude Code X Cursor Projects/Try-Instant-Fit-Nexus/marketing/instagram/video-01-instore-qr-v1/generated/assembly/06.mp4'
+file 'C:/Users/Administrator/Desktop/Claude Code X Cursor Projects/Try-Instant-Fit-Nexus/marketing/instagram/video-01-instore-qr-v1/generated/assembly/07.mp4'
