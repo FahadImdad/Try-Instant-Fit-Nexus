@@ -9,6 +9,11 @@ interface WidgetConfig {
   buttonColor: string;
   buttonPosition: 'top-right' | 'bottom-right' | 'top-left' | 'bottom-left';
   enabled: boolean;
+  showPlatformLogo: boolean;
+  vendorLogoUrl?: string | null;
+  platformLogoUrl?: string | null;
+  vendorName?: string | null;
+  platformName?: string;
 }
 
 interface Product {
@@ -626,6 +631,7 @@ class GhostLayerWidget {
           </div>
           <img src="${data?.resultUrl || ''}" alt="Virtual try-on result" class="gl-result-img" />
           <div class="gl-result-actions">
+            <button class="gl-secondary-btn" id="gl-download">Download Image</button>
             <button class="gl-secondary-btn" id="gl-retry">Try Another Photo</button>
             <button class="gl-secondary-btn" id="gl-wl-btn">♡ Wishlist</button>
             <button class="gl-primary-btn gl-buy-btn" id="gl-buy-btn">🛒 Add to Cart</button>
@@ -984,6 +990,16 @@ class GhostLayerWidget {
     }
 
     if (step === 'result') {
+      root.getElementById('gl-download')?.addEventListener('click', async () => {
+        const image = root.querySelector<HTMLImageElement>('.gl-result-img');
+        if (!image?.src) return;
+        try {
+          await this.downloadComposedImage(image.src);
+          this.trackEvent('image_downloaded', { product_id: this.currentProduct?.id });
+        } catch (error) {
+          console.error('[GhostLayer] Download failed:', error);
+        }
+      });
       root.getElementById('gl-retry')?.addEventListener('click', () => {
         this.selectedFile = null;
         this.renderOverlay('upload');
@@ -1018,6 +1034,60 @@ class GhostLayerWidget {
         this.renderOverlay('upload');
       });
     }
+  }
+
+  private async downloadComposedImage(resultUrl: string): Promise<void> {
+    const image = await this.loadImage(resultUrl, true);
+    const canvas = document.createElement('canvas');
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('Canvas is not available');
+    ctx.drawImage(image, 0, 0);
+    const inset = Math.max(16, Math.round(canvas.width * 0.025));
+    const logoSize = Math.max(28, Math.round(canvas.width * 0.09));
+    const nameSize = Math.max(14, Math.round(canvas.width * 0.028));
+    if (this.config?.showPlatformLogo) {
+      if (this.config.platformLogoUrl) {
+        const logo = await this.loadImage(this.config.platformLogoUrl);
+        ctx.drawImage(logo, inset, inset, logoSize, logoSize);
+      } else {
+        ctx.font = `700 ${Math.max(16, Math.round(canvas.width * 0.035))}px Arial`;
+        ctx.fillStyle = '#ffffff';
+        ctx.shadowColor = 'rgba(0,0,0,.45)';
+        ctx.shadowBlur = 5;
+        ctx.fillText(this.config.platformName || 'Try Instant Fit', inset, inset + Math.max(18, Math.round(canvas.width * 0.035)));
+        ctx.shadowBlur = 0;
+      }
+    }
+    if (this.config?.vendorLogoUrl) {
+      const logo = await this.loadImage(this.config.vendorLogoUrl);
+      const scale = Math.min(logoSize / logo.naturalWidth, logoSize / logo.naturalHeight);
+      const w = logo.naturalWidth * scale;
+      const h = logo.naturalHeight * scale;
+      ctx.drawImage(logo, canvas.width - inset - w, inset, w, h);
+    }
+    if (this.config?.vendorName) {
+      ctx.font = `700 ${nameSize}px Arial`;
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'right';
+      ctx.fillText(this.config.vendorName, canvas.width - inset, inset + logoSize + nameSize);
+      ctx.textAlign = 'left';
+    }
+    const link = document.createElement('a');
+    link.download = `try-instant-fit-${Date.now()}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }
+
+  private loadImage(src: string, crossOrigin = false): Promise<HTMLImageElement> {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      if (crossOrigin) image.crossOrigin = 'anonymous';
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error(`Could not load image: ${src}`));
+      image.src = src;
+    });
   }
 
   // ─── Camera ───────────────────────────────────────────────────────────────
@@ -1198,7 +1268,7 @@ class GhostLayerWidget {
   // ─── Try-On Generation ────────────────────────────────────────────────────
 
   private tryOnCacheKey(photo: File): string {
-    return `gl_tryon_${this.currentProduct?.id}_${photo.name}_${photo.size}`;
+    return `gl_tryon_v4_unbranded_${this.currentProduct?.id}_${photo.name}_${photo.size}`;
   }
 
   private async generateTryOn(userPhoto: File): Promise<void> {

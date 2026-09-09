@@ -22,10 +22,20 @@ CREATE TABLE IF NOT EXISTS widget_configs (
   button_color     TEXT NOT NULL DEFAULT '#1a1a2e',
   button_position  TEXT NOT NULL DEFAULT 'bottom-right'
                      CHECK (button_position IN ('top-right','bottom-right','top-left','bottom-left')),
+  show_platform_logo BOOLEAN NOT NULL DEFAULT TRUE,
+  vendor_logo_url   TEXT,
+  platform_logo_url TEXT,
   created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   UNIQUE (brand_id)
 );
+
+-- Safe migration for installations created before download branding settings.
+ALTER TABLE widget_configs ADD COLUMN IF NOT EXISTS show_platform_logo BOOLEAN NOT NULL DEFAULT TRUE;
+ALTER TABLE widget_configs ADD COLUMN IF NOT EXISTS vendor_logo_url TEXT;
+ALTER TABLE widget_configs ADD COLUMN IF NOT EXISTS platform_logo_url TEXT;
+ALTER TABLE widget_configs ADD COLUMN IF NOT EXISTS vendor_name TEXT;
+ALTER TABLE widget_configs ADD COLUMN IF NOT EXISTS platform_name TEXT NOT NULL DEFAULT 'Try Instant Fit';
 
 -- ── Try-Ons ──────────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS tryons (

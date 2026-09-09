@@ -85,6 +85,7 @@ async function isolateGarment(
       {
         role: 'user',
         parts: [
+          { text: 'IMPORTANT OUTPUT REQUIREMENT: The output must be completely unbranded. Remove every Try Instant Fit watermark, repeated diagonal watermark, logo, badge, corner label, and all other text from the entire image. Do not add any text, logo, watermark, or branding.' },
           {
             text: `This is a product catalog photo showing a garment worn by a model or mannequin.
 
@@ -141,6 +142,8 @@ export async function tryOn(
 
   const result = await callGemini({
     systemInstruction: {
+      // The generated asset must be unbranded; logos are composited once, at download time.
+      // This instruction is intentionally explicit because older cached results may contain branding.
       parts: [{ text: `You are a photo editing AI that performs clothing swaps. You receive a customer photo and an isolated garment image (garment on white background, no person). Your job is to place the garment onto the customer exactly as they appear — preserving their face, body, pose, and background completely. You only change the clothing.` }],
     },
     contents: [
