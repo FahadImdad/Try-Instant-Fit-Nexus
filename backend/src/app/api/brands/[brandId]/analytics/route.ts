@@ -120,8 +120,7 @@ export async function GET(
       }
       const p = productMap.get(pid)!;
       p.tryon_count++;
-      // The dashboard's existing access labels are inverse to the stored mode.
-      if (r.access_mode === 'passcode') p.free_tryon_count++;
+      if (r.access_mode === 'free') p.free_tryon_count++;
       else p.passcode_tryon_count++;
       if (p.recent_tryons.length < 12) {
         p.recent_tryons.push({ id: r.id, result_image_url: r.result_image_url, created_at: r.created_at });
@@ -142,8 +141,8 @@ export async function GET(
       brand,
       stats: {
         total_tryons: total ?? 0,
-        free_tryons: passcode ?? 0,
-        passcode_tryons: free ?? 0,
+        free_tryons: free ?? 0,
+        passcode_tryons: passcode ?? 0,
         today: today ?? 0,
         this_week: this_week ?? 0,
         this_month: this_month ?? 0,
