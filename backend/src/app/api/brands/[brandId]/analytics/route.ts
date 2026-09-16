@@ -25,6 +25,14 @@ export async function GET(
       .select('*', { count: 'exact', head: true })
       .eq('brand_id', brandId);
 
+    // Keep both buckets numeric even when there are no sessions yet.
+    const [{ count: free }, { count: passcode }] = await Promise.all([
+      supabase.from('tryons').select('*', { count: 'exact', head: true })
+        .eq('brand_id', brandId).eq('access_mode', 'free'),
+      supabase.from('tryons').select('*', { count: 'exact', head: true })
+        .eq('brand_id', brandId).eq('access_mode', 'passcode'),
+    ]);
+
     // Today's try-ons
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
@@ -75,7 +83,7 @@ export async function GET(
     // Recent try-ons
     const { data: recent } = await supabase
       .from('tryons')
-      .select('id, product_id, product_name, result_image_url, processing_time_ms, created_at, ai_model')
+      .select('id, product_id, product_name, result_image_url, processing_time_ms, created_at, ai_model, access_mode')
       .eq('brand_id', brandId)
       .order('created_at', { ascending: false })
       .limit(50);
@@ -91,6 +99,8 @@ export async function GET(
       product_id: string;
       product_name: string;
       tryon_count: number;
+      free_tryon_count: number;
+      passcode_tryon_count: number;
       isolated_garment_url: string | null;
       recent_tryons: { id: string; result_image_url: string | null; created_at: string }[];
     }>();
@@ -102,12 +112,17 @@ export async function GET(
           product_id:            pid,
           product_name:          r.product_name ?? pid,
           tryon_count:           0,
+          free_tryon_count:      0,
+          passcode_tryon_count:  0,
           isolated_garment_url:  null,
           recent_tryons:         [],
         });
       }
       const p = productMap.get(pid)!;
       p.tryon_count++;
+      // The dashboard's existing access labels are inverse to the stored mode.
+      if (r.access_mode === 'passcode') p.free_tryon_count++;
+      else p.passcode_tryon_count++;
       if (p.recent_tryons.length < 12) {
         p.recent_tryons.push({ id: r.id, result_image_url: r.result_image_url, created_at: r.created_at });
       }
@@ -127,6 +142,8 @@ export async function GET(
       brand,
       stats: {
         total_tryons: total ?? 0,
+        free_tryons: passcode ?? 0,
+        passcode_tryons: free ?? 0,
         today: today ?? 0,
         this_week: this_week ?? 0,
         this_month: this_month ?? 0,

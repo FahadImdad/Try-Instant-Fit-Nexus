@@ -22,6 +22,8 @@ export async function POST(request: NextRequest) {
     const brandId         = formData.get('brand_id')          as string | null;
     const productId       = formData.get('product_id')        as string | null;
     const productName     = formData.get('product_name')      as string | null;
+    const requestedAccessMode = formData.get('access_mode');
+    const accessMode = requestedAccessMode === 'passcode' ? 'passcode' : 'free';
 
     if (!userPhotoFile)   return NextResponse.json({ error: 'user_photo is required' },        { status: 400 });
     if (!productImageUrl) return NextResponse.json({ error: 'product_image_url is required' }, { status: 400 });
@@ -111,6 +113,7 @@ export async function POST(request: NextRequest) {
         processing_time_ms: processingTimeMs,
         cost_usd:           usedGarmentCache ? COST_PER_CALL : COST_PER_CALL * 2,
         source:             'ghost-layer',
+        access_mode:        accessMode,
       })
       .then(({ error }) => {
         if (error) console.error('[try-on] Failed to save tryon record:', error.message);

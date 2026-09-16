@@ -49,8 +49,17 @@ CREATE TABLE IF NOT EXISTS tryons (
   cost_usd            NUMERIC(10, 4),
   source              TEXT NOT NULL DEFAULT 'ghost-layer'
                         CHECK (source IN ('ghost-layer','scan-wear','digital-mirror')),
+  access_mode         TEXT NOT NULL DEFAULT 'free'
+                        CHECK (access_mode IN ('free','passcode')),
   created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- Safe migration for installations created before access-mode analytics.
+ALTER TABLE tryons ADD COLUMN IF NOT EXISTS access_mode TEXT NOT NULL DEFAULT 'free';
+UPDATE tryons SET access_mode = 'free' WHERE access_mode IS NULL;
+ALTER TABLE tryons DROP CONSTRAINT IF EXISTS tryons_access_mode_check;
+ALTER TABLE tryons ADD CONSTRAINT tryons_access_mode_check
+  CHECK (access_mode IN ('free','passcode'));
 
 -- ── Analytics Events ─────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS analytics_events (
@@ -74,6 +83,7 @@ CREATE TABLE IF NOT EXISTS fx_rates (
 -- ── Indexes ──────────────────────────────────────────────────────────────────
 CREATE INDEX IF NOT EXISTS idx_tryons_brand_id ON tryons(brand_id);
 CREATE INDEX IF NOT EXISTS idx_tryons_created_at ON tryons(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_tryons_access_mode ON tryons(access_mode);
 CREATE INDEX IF NOT EXISTS idx_analytics_brand_id ON analytics_events(brand_id);
 CREATE INDEX IF NOT EXISTS idx_analytics_event_name ON analytics_events(event_name);
 CREATE INDEX IF NOT EXISTS idx_analytics_created_at ON analytics_events(created_at DESC);
